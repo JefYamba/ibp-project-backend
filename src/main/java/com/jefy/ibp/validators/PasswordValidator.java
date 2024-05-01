@@ -1,6 +1,5 @@
 package com.jefy.ibp.validators;
 
-import com.jefy.ibp.dtos.AppUserDTO;
 import com.jefy.ibp.dtos.ChangePWRequestDTO;
 
 import java.util.HashMap;

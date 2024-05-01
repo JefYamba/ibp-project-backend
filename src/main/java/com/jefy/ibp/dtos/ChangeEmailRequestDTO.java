@@ -1,7 +1,6 @@
 package com.jefy.ibp.dtos;
 
 import lombok.*;
-import org.springframework.web.service.annotation.GetExchange;
 
 /**
  * @Author JefYamba

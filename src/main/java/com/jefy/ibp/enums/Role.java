@@ -2,8 +2,6 @@ package com.jefy.ibp.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * @Author JefYamba

@@ -2,7 +2,6 @@ package com.jefy.ibp.exceptions;
 
 import lombok.Getter;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**

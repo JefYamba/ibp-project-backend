@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.jefy.ibp.dtos.Constants.USERS_URL;
-import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
-import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 /**
  * @Author JefYamba

@@ -1,7 +1,6 @@
 package com.jefy.ibp.validators;
 
 import com.jefy.ibp.dtos.AppUserDTO;
-import com.jefy.ibp.entities.AppUser;
 
 import java.util.HashMap;
 import java.util.Map;

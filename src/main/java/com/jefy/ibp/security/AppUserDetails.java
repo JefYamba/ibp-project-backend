@@ -1,6 +1,5 @@
 package com.jefy.ibp.security;
 
-import ch.qos.logback.core.joran.conditional.PropertyEvalScriptBuilder;
 import com.jefy.ibp.entities.AppUser;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

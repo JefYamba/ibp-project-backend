@@ -1,7 +1,5 @@
 package com.jefy.ibp.dtos;
 
-import org.springframework.beans.factory.annotation.Value;
-
 /**
  * @Author JefYamba
  * @Email joph.e.f.yamba@gmail.com

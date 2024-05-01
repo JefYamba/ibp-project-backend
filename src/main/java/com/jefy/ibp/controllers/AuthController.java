@@ -2,7 +2,6 @@ package com.jefy.ibp.controllers;
 
 import com.jefy.ibp.dtos.Constants;
 import com.jefy.ibp.dtos.LoginRequest;
-import com.jefy.ibp.dtos.LoginResponseDTO;
 import com.jefy.ibp.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,10 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.time.LocalDateTime.now;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
 
 /**
  * @Author JefYamba

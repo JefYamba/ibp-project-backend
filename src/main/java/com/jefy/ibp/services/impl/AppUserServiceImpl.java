@@ -2,7 +2,6 @@ package com.jefy.ibp.services.impl;
 
 import com.jefy.ibp.dtos.*;
 import com.jefy.ibp.entities.AppUser;
-import com.jefy.ibp.enums.ClassEntity;
 import com.jefy.ibp.enums.Role;
 import com.jefy.ibp.exceptions.EntityNotValidException;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.jefy.ibp.dtos.Constants.DEFAULT_PASSWORD;
 import static com.jefy.ibp.enums.ClassEntity.APP_USER;
