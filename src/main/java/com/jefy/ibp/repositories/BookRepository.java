@@ -1,17 +1,14 @@
 package com.jefy.ibp.repositories;
 
-import com.jefy.ibp.entities.AppUser;
+import com.jefy.ibp.entities.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 /**
  * @Author JefYamba
  * @Email joph.e.f.yamba@gmail.com
- * @Since 01/05/2024
+ * @Since 05/05/2024
  */
 @Repository
-public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-    Optional<AppUser> findByEmail(String email);
+public interface BookRepository extends JpaRepository<Book, Long> {
 }

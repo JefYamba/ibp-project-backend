@@ -34,6 +34,7 @@ import static com.jefy.ibp.services.impl.ImageService.deleteImageFileFromDirecto
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordValidator passwordValidator;
 
     @Override
     public List<AppUserDTO> getAll() {
@@ -43,60 +44,67 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUserDTO getById(Long id) throws RecordNotFoundException {
+    public AppUserDTO getById(Long id) {
         return appUserRepository.findById(id).map(AppUserDTO::fromEntity).orElseThrow(
                 () -> new RecordNotFoundException("user does not exist")
         );
     }
 
     @Override
-    public AppUserDTO register(AppUserDTO appUserDto) throws EntityNotValidException, IllegalArgumentException {
-        if (appUserDto == null)
+    public AppUserDTO register(AppUserRequestDTO appUserRequestDTO){
+        if (appUserRequestDTO == null)
             throw new IllegalArgumentException("AppUserDTO cannot be null");
 
-        Map<String, String> errors = AppUserValidator.validateUser(appUserDto);
+        Map<String, String> errors = AppUserValidator.validateUser(appUserRequestDTO);
 
         if (!errors.isEmpty()){
             throw new EntityNotValidException(errors);
         }
         String encodedPassword = passwordEncoder.encode(DEFAULT_PASSWORD);
-        AppUser appUser = AppUserDTO.toEntity(appUserDto);
-        appUser.setPassword(encodedPassword);
-        appUser.setRole(Role.USER);
-        AppUser savedUser = appUserRepository.save(appUser);
-        return AppUserDTO.fromEntity(savedUser);
+        AppUser appUser = AppUser.builder()
+                .firstName(appUserRequestDTO.getFirstName())
+                .lastName(appUserRequestDTO.getLastName())
+                .email(appUserRequestDTO.getEmail())
+                .gender(appUserRequestDTO.getGender())
+                .birthDate(appUserRequestDTO.getBirthDate())
+                .phoneNumber(appUserRequestDTO.getPhoneNumber())
+                .address(appUserRequestDTO.getAddress())
+                .password(encodedPassword)
+                .role(Role.USER)
+                .build();
+
+        return AppUserDTO.fromEntity(appUserRepository.save(appUser));
     }
 
     @Override
-    public AppUserDTO update(AppUserDTO appUserDto) throws IllegalArgumentException, EntityNotValidException, RecordNotFoundException {
+    public AppUserDTO update(AppUserRequestDTO appUserRequestDTO){
 
-        if (appUserDto == null || appUserDto.getId() == null)
+        if (appUserRequestDTO == null || appUserRequestDTO.getId() == null)
             throw new IllegalArgumentException("AppUserDTO Or Id cannot be null");
 
-        Map<String, String> errorsUser = AppUserValidator.validateUser(appUserDto);
+        Map<String, String> errorsUser = AppUserValidator.validateUser(appUserRequestDTO);
         if (!errorsUser.isEmpty()){
             throw new EntityNotValidException(errorsUser);
         }
 
-        AppUser appUser = appUserRepository.findById(appUserDto.getId())
+        AppUser appUser = appUserRepository.findById(appUserRequestDTO.getId())
                 .orElseThrow(() -> new RecordNotFoundException("user does not exist"));
 
-        appUser.setFirstName(appUserDto.getFirstName());
-        appUser.setLastName(appUserDto.getLastName());
-        appUser.setEmail(appUserDto.getEmail());
-        appUser.setGender(appUserDto.getGender());
-        appUser.setBirthDate(appUserDto.getBirthDate());
-        appUser.setPhoneNumber(appUserDto.getPhoneNumber());
-        appUser.setAddress(appUserDto.getAddress());
+        appUser.setFirstName(appUserRequestDTO.getFirstName());
+        appUser.setLastName(appUserRequestDTO.getLastName());
+        appUser.setEmail(appUserRequestDTO.getEmail());
+        appUser.setGender(appUserRequestDTO.getGender());
+        appUser.setBirthDate(appUserRequestDTO.getBirthDate());
+        appUser.setPhoneNumber(appUserRequestDTO.getPhoneNumber());
+        appUser.setAddress(appUserRequestDTO.getAddress());
 
-        AppUser savedUser = appUserRepository.save(appUser);
-        return AppUserDTO.fromEntity(savedUser);
+        return AppUserDTO.fromEntity(appUserRepository.save(appUser));
     }
 
 
 
     @Override
-    public void changeRole(Long userId, Role role) throws EntityNotValidException, RecordNotFoundException {
+    public void changeRole(Long userId, Role role){
         if (role == null || userId == null) {
             throw new IllegalArgumentException("User Id and role cannot be null");
         }
@@ -108,7 +116,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public void delete(Long id) throws RecordNotFoundException, IOException {
+    public void delete(Long id) throws IOException {
         AppUser appUser = appUserRepository.findById(id).orElseThrow(
                 () -> new RecordNotFoundException("user does not exist")
         );
@@ -119,11 +127,16 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public void changePassWord(Long userId, ChangePWRequestDTO changePWRequestDTO) throws IllegalArgumentException, EntityNotValidException, RecordNotFoundException {
-        if (changePWRequestDTO == null || userId == null) {
+    public void changePassWord(Long userId, ChangePWRequestDTO changePWRequestDTO){
+        if (changePWRequestDTO == null || userId == null ) {
             throw new IllegalArgumentException("User Id and email cannot be null");
         }
-        Map<String, String> errors = PasswordValidator.validatePassword(changePWRequestDTO);
+
+        if (!appUserRepository.existsById(userId)) {
+            throw new RecordNotFoundException("user does not exist");
+        }
+
+        Map<String, String> errors = passwordValidator.validatePassword(changePWRequestDTO, appUserRepository.findById(userId).orElse(null));
         if (!errors.isEmpty()){
             throw new EntityNotValidException(errors);
         }
@@ -135,7 +148,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public void setImage(Long userId, MultipartFile image) throws RecordNotFoundException, IOException {
+    public void setImage(Long userId, MultipartFile image)  throws IOException {
 
         if (image == null || userId == null || image.isEmpty() ){
             throw new IllegalArgumentException("User Id and image cannot be null");

@@ -2,8 +2,6 @@ package com.jefy.ibp.services;
 
 import com.jefy.ibp.dtos.*;
 import com.jefy.ibp.enums.Role;
-import com.jefy.ibp.exceptions.EntityNotValidException;
-import com.jefy.ibp.exceptions.RecordNotFoundException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,17 +15,17 @@ import java.util.List;
 public interface AppUserService {
     List<AppUserDTO> getAll();
 
-    AppUserDTO getById(Long id) throws RecordNotFoundException;
+    AppUserDTO getById(Long id);
 
-    AppUserDTO register(AppUserDTO appUserDto)throws EntityNotValidException, IllegalArgumentException ;
+    AppUserDTO register(AppUserRequestDTO appUserRequestDTO);
 
-    AppUserDTO update(AppUserDTO appUserDto) throws IllegalArgumentException, EntityNotValidException, RecordNotFoundException;
+    AppUserDTO update(AppUserRequestDTO appUserRequestDTO);
 
-    void changeRole(Long userId, Role role)throws EntityNotValidException, RecordNotFoundException ;
+    void changeRole(Long userId, Role role);
 
-    void delete(Long id) throws RecordNotFoundException, IOException;
+    void delete(Long id)throws IOException;
 
-    void changePassWord(Long userId, ChangePWRequestDTO changePWRequestDTO)throws IllegalArgumentException, EntityNotValidException, RecordNotFoundException ;
+    void changePassWord(Long userId, ChangePWRequestDTO changePWRequestDTO);
 
-    void setImage(Long userId, MultipartFile image)  throws RecordNotFoundException, IOException;
+    void setImage(Long userId, MultipartFile image)  throws IOException;
 }
