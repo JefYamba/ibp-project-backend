@@ -72,7 +72,6 @@ public class SecurityConfig {
                             "/swagger-ui.html",
                             "/webjars/**"
                     ).permitAll();
-                    auth.requestMatchers("/users/**").hasRole("ADMIN");
                     auth.anyRequest().authenticated();
 //                    auth.anyRequest().permitAll();
                 })
@@ -94,12 +93,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtEncoder jwtEncoder() {
-        /*
-        RSAKey.Builder builder = new RSAKey.Builder(keys.getPublicKey())
-                .privateKey(keys.getPrivateKey())
-                .keyUse(KeyUse.SIGNATURE);
-        JWK jwk = builder.build();
-        */
+
         JWK jwk = new RSAKey.Builder(keys.getPublicKey())
                 .privateKey(keys.getPrivateKey())
                 .build();

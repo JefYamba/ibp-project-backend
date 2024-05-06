@@ -51,7 +51,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUserDTO register(AppUserRequestDTO appUserRequestDTO){
+    public AppUserDTO create(AppUserRequestDTO appUserRequestDTO){
         if (appUserRequestDTO == null)
             throw new IllegalArgumentException("AppUserDTO cannot be null");
 
@@ -162,8 +162,7 @@ public class AppUserServiceImpl implements AppUserService {
             deleteImageFileFromDirectory(APP_USER, user.getImage());
         }
 
-        String imageUrl = ImageService.saveImageInDirectory(APP_USER, userId, image);
-        user.setImage(imageUrl);
+        user.setImage(ImageService.saveImageInDirectory(APP_USER, userId, image));
         appUserRepository.save(user);
     }
 

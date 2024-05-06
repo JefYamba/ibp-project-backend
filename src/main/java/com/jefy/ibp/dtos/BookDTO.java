@@ -29,7 +29,7 @@ public class BookDTO {
     private String summary;
     private String image;
 
-    public static BookDTO toEntity(Book book) {
+    public static BookDTO fromEntity(Book book) {
         return BookDTO.builder()
                 .id(book.getId())
                 .title(book.getTitle())

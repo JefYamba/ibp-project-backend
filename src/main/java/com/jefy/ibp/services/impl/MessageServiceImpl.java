@@ -28,6 +28,13 @@ public class MessageServiceImpl implements MessageService {
     private final AppUserRepository appUserRepository;
 
     @Override
+    public List<MessageDTO> getAll() {
+        return messageRepository.findAll().stream()
+                .map(MessageDTO::fromEntity)
+                .toList();
+    }
+
+    @Override
     public List<MessageDTO> getAllBySender(Long senderId) {
         if (senderId != null && appUserRepository.existsById(senderId)) {
             return messageRepository.findBySenderIdOrderByCreatedAtDesc(senderId).stream()

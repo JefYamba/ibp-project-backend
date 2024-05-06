@@ -1,8 +1,10 @@
 package com.jefy.ibp.services;
 
 import com.jefy.ibp.dtos.BookDTO;
+import com.jefy.ibp.dtos.BookRequestDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -13,8 +15,8 @@ import java.util.List;
 public interface BookService {
     List<BookDTO> getAll();
     BookDTO getById(Long id);
-    BookDTO register(BookDTO appUserDto);
-    BookDTO update(BookDTO appUserDto);
-    void delete(Long id);
-    void setImage(Long userId, MultipartFile image);
+    BookDTO create(BookRequestDTO bookRequestDTO);
+    BookDTO update(BookRequestDTO bookRequestDTO);
+    void delete(Long id) throws IOException;
+    void setImage(Long bookId, MultipartFile image) throws IOException;
 }

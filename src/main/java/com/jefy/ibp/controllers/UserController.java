@@ -37,14 +37,14 @@ public class UserController {
 
 
     @GetMapping("/{user_id}")
-    public ResponseEntity<AppUserDTO> getUser(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<AppUserDTO> get(@PathVariable("user_id") Long userId) {
         return ResponseEntity.ok(appUserService.getById(userId));
     }
 
 
     @PostMapping
-    public ResponseEntity<AppUserDTO> registerUser(@RequestBody AppUserRequestDTO appUserRequestDTO) {
-        return ResponseEntity.ok(appUserService.register(appUserRequestDTO));
+    public ResponseEntity<AppUserDTO> register(@RequestBody AppUserRequestDTO appUserRequestDTO) {
+        return ResponseEntity.ok(appUserService.create(appUserRequestDTO));
     }
 
 
@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @PutMapping("/{user_id}/update_password")
-    public ResponseEntity<Map<String,String>> changePasswordUser(@PathVariable("user_id") Long userId, @RequestBody ChangePWRequestDTO changePWRequestDTO) {
+    public ResponseEntity<Map<String,String>> changePassword(@PathVariable("user_id") Long userId, @RequestBody ChangePWRequestDTO changePWRequestDTO) {
         Map<String,String> response = new HashMap<>();
         try {
             appUserService.changePassWord(userId,changePWRequestDTO);
@@ -75,7 +75,7 @@ public class UserController {
     }
 
     @PutMapping("/{user_id}/update_role")
-    public ResponseEntity<Map<String,String>> changeRoleUser(@PathVariable("user_id") Long userId, @RequestBody Role role) {
+    public ResponseEntity<Map<String,String>> changeRole(@PathVariable("user_id") Long userId, @RequestBody Role role) {
         Map<String,String> response = new HashMap<>();
         try {
             appUserService.changeRole(userId, role);
@@ -93,11 +93,11 @@ public class UserController {
 
 
     @DeleteMapping("/{user_id}")
-    public ResponseEntity<Map<String,String>> deleteUser(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<Map<String,String>> delete(@PathVariable("user_id") Long userId) {
         Map<String,String> response = new HashMap<>();
         try {
             appUserService.delete(userId);
-            response.put("response", "role changed successfully");
+            response.put("response", "user deleted successfully");
             return ResponseEntity.ok(response);
         } catch (RecordNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -107,14 +107,12 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/{user_id}")
-    public ResponseEntity<Map<String,String>> setUserImageProfile(@PathVariable("user_id") Long userId, @RequestPart MultipartFile image) {
+    public ResponseEntity<Map<String,String>> setImageProfile(@PathVariable("user_id") Long userId, @RequestPart MultipartFile image) {
         Map<String,String> response = new HashMap<>();
-        System.out.println(image.getOriginalFilename());
         try {
             appUserService.setImage(userId, image);
-            response.put("response", "role changed successfully");
+            response.put("response", "image saved successfully");
             return ResponseEntity.ok(response);
         } catch (RecordNotFoundException e) {
             return ResponseEntity.notFound().build();

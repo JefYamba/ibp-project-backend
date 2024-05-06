@@ -12,6 +12,7 @@ import java.util.List;
  */
 public interface MessageService {
 
+    List<MessageDTO> getAll();
     List<MessageDTO> getAllBySender(Long senderId);
     List<MessageDTO> getAllByReceiver(Long receiverId);
     List<MessageDTO> getAllForAdmins();

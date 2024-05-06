@@ -17,7 +17,7 @@ public interface AppUserService {
 
     AppUserDTO getById(Long id);
 
-    AppUserDTO register(AppUserRequestDTO appUserRequestDTO);
+    AppUserDTO create(AppUserRequestDTO appUserRequestDTO);
 
     AppUserDTO update(AppUserRequestDTO appUserRequestDTO);
 
