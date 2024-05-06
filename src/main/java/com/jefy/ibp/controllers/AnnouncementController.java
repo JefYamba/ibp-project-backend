@@ -2,6 +2,7 @@ package com.jefy.ibp.controllers;
 
 import com.jefy.ibp.dtos.AnnouncementDTO;
 import com.jefy.ibp.dtos.AnnouncementRequestDTO;
+import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.services.AnnouncementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,11 @@ public class AnnouncementController {
 
     @PutMapping
     public ResponseEntity<AnnouncementDTO> update(@RequestBody AnnouncementRequestDTO announcementRequestDTO) {
-        return ResponseEntity.ok(announcementService.update(announcementRequestDTO));
+        try {
+            return ResponseEntity.ok(announcementService.update(announcementRequestDTO));
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @DeleteMapping("/{announcement_id}")
@@ -51,7 +56,7 @@ public class AnnouncementController {
             announcementService.delete(announcementId);
             response.put("response", "announcement deleted successfully");
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
+        } catch (RecordNotFoundException e) {
             response.put("errors",e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }

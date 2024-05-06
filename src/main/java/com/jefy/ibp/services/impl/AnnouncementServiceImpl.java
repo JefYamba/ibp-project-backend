@@ -3,10 +3,8 @@ package com.jefy.ibp.services.impl;
 import com.jefy.ibp.dtos.AnnouncementDTO;
 import com.jefy.ibp.dtos.AnnouncementRequestDTO;
 import com.jefy.ibp.entities.Announcement;
-import com.jefy.ibp.entities.AppUser;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.repositories.AnnouncementRepository;
-import com.jefy.ibp.repositories.AppUserRepository;
 import com.jefy.ibp.services.AnnouncementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,6 @@ import java.util.List;
 @Transactional
 public class AnnouncementServiceImpl implements AnnouncementService {
     private final AnnouncementRepository announcementRepository;
-    private final AppUserRepository appUserRepository;
 
     @Override
     public List<AnnouncementDTO> getAll() {
@@ -44,7 +41,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     @Override
     public AnnouncementDTO create(AnnouncementRequestDTO announcementRequestDTO) {
 
-        if (announcementRequestDTO == null || announcementRequestDTO.getAuthorId() == null) {
+        if (announcementRequestDTO == null) {
             throw new IllegalArgumentException("Can't create announcement without author id");
         }
 
@@ -52,13 +49,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             throw new IllegalArgumentException("Can't create announcement without content");
         }
 
-        AppUser author = appUserRepository.findById(announcementRequestDTO.getAuthorId()).orElseThrow(
-                () -> new RecordNotFoundException("Can't find user with id: " + announcementRequestDTO.getAuthorId())
-        );
-
         return AnnouncementDTO.fromEntity(
                 announcementRepository.save(Announcement.builder()
-                        .author(author)
                         .content(announcementRequestDTO.getContent())
                         .createdAt(Instant.now())
                         .build())
@@ -66,7 +58,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public AnnouncementDTO update(AnnouncementRequestDTO announcementRequestDTO) {
+    public AnnouncementDTO update(AnnouncementRequestDTO announcementRequestDTO)  throws Exception {
         if (announcementRequestDTO == null || announcementRequestDTO.getId() == null) {
             throw new IllegalArgumentException("Can't update this announcement without id");
         }
@@ -87,7 +79,10 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws RecordNotFoundException {
+        if (!announcementRepository.existsById(id)){
+            throw new RecordNotFoundException("Can't find announcement with id: " + id);
+        }
         announcementRepository.deleteById(id);
     }
 }

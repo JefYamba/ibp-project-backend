@@ -27,6 +27,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 /**
@@ -72,6 +73,22 @@ public class SecurityConfig {
                             "/swagger-ui.html",
                             "/webjars/**"
                     ).permitAll();
+                    auth.requestMatchers(GET,"/ibp/v1/users").hasRole("ADMIN");
+                    auth.requestMatchers(POST,"/ibp/v1/users").hasRole("ADMIN");
+                    auth.requestMatchers(PUT,"/ibp/v1/users/*/update_role").hasRole("ADMIN");
+                    auth.requestMatchers(DELETE,"/ibp/v1/users/**").hasRole("ADMIN");
+
+                    auth.requestMatchers(GET,"/ibp/v1/messages", "/ibp/v1/messages/admins").hasRole("ADMIN");
+
+                    auth.requestMatchers(POST,"/ibp/v1/books/**").hasRole("ADMIN");
+                    auth.requestMatchers(PUT,"/ibp/v1/books/**").hasRole("ADMIN");
+                    auth.requestMatchers(DELETE,"/ibp/v1/books/**").hasRole("ADMIN");
+
+                    auth.requestMatchers(POST,"/ibp/v1/announcements/**").hasRole("ADMIN");
+                    auth.requestMatchers(PUT,"/ibp/v1/announcements/**").hasRole("ADMIN");
+                    auth.requestMatchers(DELETE,"/ibp/v1/announcements/**").hasRole("ADMIN");
+
+
                     auth.anyRequest().authenticated();
 //                    auth.anyRequest().permitAll();
                 })
@@ -110,6 +127,7 @@ public class SecurityConfig {
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
         return jwtConverter;
     }
 }

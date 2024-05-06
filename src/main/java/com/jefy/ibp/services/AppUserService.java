@@ -19,7 +19,7 @@ public interface AppUserService {
 
     AppUserDTO create(AppUserRequestDTO appUserRequestDTO);
 
-    AppUserDTO update(AppUserRequestDTO appUserRequestDTO);
+    AppUserDTO update(AppUserRequestDTO appUserRequestDTO) throws Exception;
 
     void changeRole(Long userId, Role role);
 

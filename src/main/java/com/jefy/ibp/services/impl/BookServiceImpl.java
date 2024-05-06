@@ -47,7 +47,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDTO create(BookRequestDTO bookRequestDTO) {
         if (bookRequestDTO == null)
-            throw new IllegalArgumentException("AppUserDTO cannot be null");
+            throw new IllegalArgumentException("bookDTO cannot be null");
 
         Map<String, String> errors = BookValidator.validateBook(bookRequestDTO);
 
@@ -61,7 +61,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDTO update(BookRequestDTO bookRequestDTO) {
+    public BookDTO update(BookRequestDTO bookRequestDTO) throws Exception {
         if (bookRequestDTO == null || bookRequestDTO.getId() == null)
             throw new IllegalArgumentException("BookRequestDTO Or Id cannot be null");
 

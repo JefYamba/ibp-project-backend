@@ -96,7 +96,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageDTO update(MessageRequestDTO messageRequestDTO) {
+    public MessageDTO update(MessageRequestDTO messageRequestDTO)  throws Exception  {
         if (messageRequestDTO == null || messageRequestDTO.getId() == null) {
             throw new IllegalArgumentException("Can't update this announcement without id");
         }
@@ -118,6 +118,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void delete(Long id) {
+        if (!messageRepository.existsById(id)){
+            throw new RecordNotFoundException("Can't find message with id: " + id);
+        }
         messageRepository.deleteById(id);
     }
 }

@@ -2,6 +2,7 @@ package com.jefy.ibp.services;
 
 import com.jefy.ibp.dtos.AnnouncementDTO;
 import com.jefy.ibp.dtos.AnnouncementRequestDTO;
+import com.jefy.ibp.exceptions.RecordNotFoundException;
 
 import java.util.List;
 
@@ -14,6 +15,6 @@ public interface AnnouncementService {
     List<AnnouncementDTO> getAll();
     AnnouncementDTO getById(Long id);
     AnnouncementDTO create(AnnouncementRequestDTO announcementRequestDTO);
-    AnnouncementDTO update(AnnouncementRequestDTO announcementRequestDTO);
-    void delete(Long id);
+    AnnouncementDTO update(AnnouncementRequestDTO announcementRequestDTO) throws Exception;
+    void delete(Long id) throws RecordNotFoundException;
 }

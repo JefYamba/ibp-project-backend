@@ -20,7 +20,6 @@ public class AppUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        System.out.println("In user detail service");
         return new AppUserDetails(
                 appUserRepository.findByEmail(email).orElseThrow(
                         () -> new UsernameNotFoundException("user is not found")

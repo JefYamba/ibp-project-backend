@@ -77,7 +77,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUserDTO update(AppUserRequestDTO appUserRequestDTO){
+    public AppUserDTO update(AppUserRequestDTO appUserRequestDTO)  throws Exception {
 
         if (appUserRequestDTO == null || appUserRequestDTO.getId() == null)
             throw new IllegalArgumentException("AppUserDTO Or Id cannot be null");

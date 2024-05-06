@@ -30,6 +30,9 @@ public class BookDTO {
     private String image;
 
     public static BookDTO fromEntity(Book book) {
+        if (book == null || book.getId() == null ) {
+            return null;
+        }
         return BookDTO.builder()
                 .id(book.getId())
                 .title(book.getTitle())
@@ -42,19 +45,6 @@ public class BookDTO {
                 .image(
                         (book.getImage() == null || book.getImage().isBlank())? "" : getUrl(APP_USER,book.getImage())
                 )
-                .build();
-    }
-
-    public static Book toEntity(BookDTO dto) {
-        return Book.builder()
-                .id(dto.getId())
-                .title(dto.getTitle())
-                .author(dto.getAuthor())
-                .publisher(dto.getPublisher())
-                .publicationDate(dto.getPublicationDate())
-                .isbn(dto.getIsbn())
-                .genre(dto.getGenre())
-                .summary(dto.getSummary())
                 .build();
     }
 }

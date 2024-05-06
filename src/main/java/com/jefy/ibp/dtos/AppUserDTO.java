@@ -33,6 +33,9 @@ public class AppUserDTO {
     private Role role;
 
     public static AppUserDTO fromEntity(AppUser appUser) {
+        if (appUser == null || appUser.getId() == null) {
+            return null;
+        }
         return AppUserDTO.builder()
                 .id(appUser.getId())
                 .firstName(appUser.getFirstName())
@@ -46,21 +49,6 @@ public class AppUserDTO {
                 )
                 .email(appUser.getEmail())
                 .role(appUser.getRole())
-                .build();
-    }
-
-
-    public static AppUser toEntity(AppUserDTO appUserDto) {
-        return AppUser.builder()
-                .id(appUserDto.getId())
-                .firstName(appUserDto.getFirstName())
-                .lastName(appUserDto.getLastName())
-                .gender(appUserDto.getGender())
-                .birthDate(appUserDto.getBirthDate())
-                .phoneNumber(appUserDto.getPhoneNumber())
-                .address(appUserDto.getAddress())
-                .email(appUserDto.getEmail())
-                .role(appUserDto.getRole())
                 .build();
     }
 }

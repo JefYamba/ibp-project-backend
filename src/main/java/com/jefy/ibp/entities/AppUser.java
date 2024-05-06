@@ -1,5 +1,6 @@
 package com.jefy.ibp.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jefy.ibp.enums.Gender;
 import com.jefy.ibp.enums.Role;
 import jakarta.persistence.*;
@@ -54,12 +55,11 @@ public class AppUser {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    Collection<Announcement> announcements;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     Collection<Message> sentMessages;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     Collection<Message> ReceivedMessages;
 

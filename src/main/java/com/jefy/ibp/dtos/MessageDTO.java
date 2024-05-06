@@ -20,26 +20,20 @@ public class MessageDTO {
     private Long id;
     private String content;
     private Instant createdAt;
-    private AppUser sender;
-    private AppUser receiver;
+    private AppUserDTO sender;
+    private AppUserDTO receiver;
 
     public static MessageDTO fromEntity(Message message) {
+        if(message == null || message.getId() == null){
+            return null;
+        }
+
         return MessageDTO.builder()
                 .id(message.getId())
                 .content(message.getContent())
-                .sender(message.getSender())
-                .receiver(message.getReceiver())
+                .sender(AppUserDTO.fromEntity(message.getSender()))
+                .receiver(AppUserDTO.fromEntity(message.getReceiver()))
                 .createdAt(message.getCreatedAt())
-                .build();
-    }
-
-    public static Message toEntity(MessageDTO messageDTO) {
-        return Message.builder()
-                .id(messageDTO.getId())
-                .content(messageDTO.getContent())
-                .sender(messageDTO.getSender())
-                .receiver(messageDTO.getReceiver())
-                .createdAt(messageDTO.getCreatedAt())
                 .build();
     }
 }

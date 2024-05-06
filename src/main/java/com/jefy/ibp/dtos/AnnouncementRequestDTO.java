@@ -15,6 +15,5 @@ import lombok.*;
 public class AnnouncementRequestDTO {
     private Long id;
     private String content;
-    private Long authorId;
 
 }

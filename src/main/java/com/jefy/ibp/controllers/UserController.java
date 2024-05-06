@@ -49,8 +49,12 @@ public class UserController {
 
 
     @PutMapping
-    public ResponseEntity<AppUserDTO> updateUser(@RequestBody AppUserRequestDTO appUserRequestDTO) {
-        return ResponseEntity.ok(appUserService.update(appUserRequestDTO));
+    public ResponseEntity<AppUserDTO> update(@RequestBody AppUserRequestDTO appUserRequestDTO) {
+        try {
+            return ResponseEntity.ok(appUserService.update(appUserRequestDTO));
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @PutMapping("/{user_id}/update_password")

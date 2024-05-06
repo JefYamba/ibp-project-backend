@@ -23,8 +23,8 @@ public class PasswordValidator {
         Map<String, String> errors = new HashMap<>();
 
         if (changePWRequestDTO.getOldPassword() == null || changePWRequestDTO.getOldPassword().isBlank()) {
-            errors.put("oldPassword", "Old password is required");
-        } else if (!appUser.getPassword().equals(passwordEncoder.encode(changePWRequestDTO.getNewPassword()))) {
+            errors.put("oldPassword", "Old password is empty");
+        } else if (!passwordEncoder.matches(changePWRequestDTO.getOldPassword(),appUser.getPassword())) {
             errors.put("oldPassword", "Old password is incorrect");
         }
         if (changePWRequestDTO.getNewPassword() == null || changePWRequestDTO.getNewPassword().isBlank() ||

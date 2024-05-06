@@ -32,6 +32,7 @@ public class Book {
     private LocalDate publicationDate;
     private String isbn;
     private String genre;
+    @Column(columnDefinition = "TEXT")
     private String summary;
     private String image;
 }

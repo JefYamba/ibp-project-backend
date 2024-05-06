@@ -16,7 +16,7 @@ public interface BookService {
     List<BookDTO> getAll();
     BookDTO getById(Long id);
     BookDTO create(BookRequestDTO bookRequestDTO);
-    BookDTO update(BookRequestDTO bookRequestDTO);
+    BookDTO update(BookRequestDTO bookRequestDTO) throws Exception;
     void delete(Long id) throws IOException;
     void setImage(Long bookId, MultipartFile image) throws IOException;
 }

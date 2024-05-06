@@ -18,6 +18,6 @@ public interface MessageService {
     List<MessageDTO> getAllForAdmins();
     MessageDTO getById(Long id);
     MessageDTO create(MessageRequestDTO messageRequestDTO);
-    MessageDTO update(MessageRequestDTO messageRequestDTO);
+    MessageDTO update(MessageRequestDTO messageRequestDTO) throws Exception;
     void delete(Long id);
 }

@@ -29,6 +29,9 @@ public class BookRequestDTO {
     private String summary;
 
     public static Book toEntity(BookRequestDTO bookRequestDTO) {
+        if (bookRequestDTO == null || bookRequestDTO.getId() == null) {
+            return null;
+        }
         return Book.builder()
                 .id(bookRequestDTO.getId())
                 .title(bookRequestDTO.getTitle())

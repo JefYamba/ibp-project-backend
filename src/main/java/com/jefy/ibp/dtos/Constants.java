@@ -15,7 +15,7 @@ public interface Constants {
     String AUTHENTIFICATION_URL = APP_ROOT_URL + "/auth";
     String USERS_URL = APP_ROOT_URL + "/users";
     String BOOKS_URL = APP_ROOT_URL + "/books";
-    String ANNOUNCEMENTS_URL = APP_ROOT_URL + "/books";
-    String MESSAGES_URL = APP_ROOT_URL + "/books";
+    String ANNOUNCEMENTS_URL = APP_ROOT_URL + "/announcements";
+    String MESSAGES_URL = APP_ROOT_URL + "/messages";
     String IMAGES_URL = APP_ROOT_URL + "/images";
 }
