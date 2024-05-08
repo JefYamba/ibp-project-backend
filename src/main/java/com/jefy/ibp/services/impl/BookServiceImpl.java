@@ -9,12 +9,14 @@ import com.jefy.ibp.repositories.BookRepository;
 import com.jefy.ibp.services.BookService;
 import com.jefy.ibp.validators.BookValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import static com.jefy.ibp.enums.ClassEntity.BOOK;
@@ -31,10 +33,24 @@ import static com.jefy.ibp.services.impl.ImageService.deleteImageFileFromDirecto
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     @Override
-    public List<BookDTO> getAll() {
-        return bookRepository.findAll().stream()
-                .map(BookDTO::fromEntity)
-                .toList();
+    public Page<BookDTO> getAll(int page, int size, String searchKey) {
+
+        if (searchKey == null || searchKey.isBlank()) {
+            return bookRepository.findAll(PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,"title")))
+                    .map(BookDTO::fromEntity);
+        } else {
+            return bookRepository.
+                findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrPublisherContainingIgnoreCaseOrIsbnContainingIgnoreCaseOrGenreContainingIgnoreCaseOrSummaryContainingIgnoreCase(
+                    searchKey, searchKey,searchKey,searchKey,searchKey,searchKey, PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,"title"))
+                )
+                .map(BookDTO::fromEntity);
+        }
+    }
+
+    public Page<BookDTO> getAllLatest(int page, int size) {
+        return bookRepository.findAll(PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"id")))
+                .map(BookDTO::fromEntity);
+
     }
 
     @Override

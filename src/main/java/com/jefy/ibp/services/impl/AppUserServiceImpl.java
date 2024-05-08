@@ -10,13 +10,15 @@ import com.jefy.ibp.services.AppUserService;
 import com.jefy.ibp.validators.AppUserValidator;
 import com.jefy.ibp.validators.PasswordValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import static com.jefy.ibp.dtos.Constants.DEFAULT_PASSWORD;
@@ -37,10 +39,15 @@ public class AppUserServiceImpl implements AppUserService {
     private final PasswordValidator passwordValidator;
 
     @Override
-    public List<AppUserDTO> getAll() {
-        return appUserRepository.findAll().stream()
-                .map(AppUserDTO::fromEntity)
-                .toList();
+    public Page<AppUserDTO> getAll(int page, int size, String searchKey) {
+
+        if (searchKey == null || searchKey.isBlank()) {
+            return appUserRepository.findAll(PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,"firstName","lastName"))).map(AppUserDTO::fromEntity);
+        } else {
+            return appUserRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(searchKey, searchKey, searchKey,
+                    PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,"firstName","lastName"))).map(AppUserDTO::fromEntity
+            );
+        }
     }
 
     @Override

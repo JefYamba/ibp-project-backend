@@ -5,6 +5,7 @@ import com.jefy.ibp.dtos.AnnouncementRequestDTO;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.services.AnnouncementService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +27,11 @@ public class AnnouncementController {
     private final AnnouncementService announcementService;
 
     @GetMapping
-    public ResponseEntity<List<AnnouncementDTO>> getAnnouncements() {
-        return ResponseEntity.ok(announcementService.getAll());
+    public ResponseEntity<Page<AnnouncementDTO>> getAnnouncements(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(announcementService.getAll(page,size));
     }
 
     @GetMapping("/{announcement_id}")

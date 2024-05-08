@@ -2,8 +2,7 @@ package com.jefy.ibp.services;
 
 import com.jefy.ibp.dtos.MessageDTO;
 import com.jefy.ibp.dtos.MessageRequestDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 /**
  * @Author JefYamba
@@ -12,10 +11,10 @@ import java.util.List;
  */
 public interface MessageService {
 
-    List<MessageDTO> getAll();
-    List<MessageDTO> getAllBySender(Long senderId);
-    List<MessageDTO> getAllByReceiver(Long receiverId);
-    List<MessageDTO> getAllForAdmins();
+    Page<MessageDTO> getAll(int page, int size);
+    Page<MessageDTO> getAllBySender(Long senderId, int page, int size);
+    Page<MessageDTO> getAllByReceiver(Long receiverId, int page, int size);
+    Page<MessageDTO> getAllForAdmins(int page, int size);
     MessageDTO getById(Long id);
     MessageDTO create(MessageRequestDTO messageRequestDTO);
     MessageDTO update(MessageRequestDTO messageRequestDTO) throws Exception;

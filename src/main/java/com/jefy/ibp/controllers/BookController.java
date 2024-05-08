@@ -5,12 +5,12 @@ import com.jefy.ibp.dtos.BookRequestDTO;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.services.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.jefy.ibp.dtos.Constants.BOOKS_URL;
@@ -27,8 +27,20 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public ResponseEntity<List<BookDTO>> getAllBooks() {
-        return ResponseEntity.ok(bookService.getAll());
+    public ResponseEntity<Page<BookDTO>> getAllBooks(
+            @RequestParam(defaultValue = "") String searchKey,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(bookService.getAll(page,size, searchKey));
+    }
+    @GetMapping("/latest")
+    public ResponseEntity<Page<BookDTO>> getAllLatestBooks(
+            @RequestParam(value = "q", defaultValue = "") String searchKey,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(bookService.getAll(page,size, searchKey));
     }
 
     @GetMapping("/{book_id}")

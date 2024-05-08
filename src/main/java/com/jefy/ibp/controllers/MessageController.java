@@ -4,11 +4,11 @@ import com.jefy.ibp.dtos.MessageDTO;
 import com.jefy.ibp.dtos.MessageRequestDTO;
 import com.jefy.ibp.services.MessageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.jefy.ibp.dtos.Constants.MESSAGES_URL;
@@ -26,25 +26,39 @@ public class MessageController {
 
 
     @GetMapping
-    public ResponseEntity<List<MessageDTO>> getAllMessages() {
-        return ResponseEntity.ok(messageService.getAll());
+    public ResponseEntity<Page<MessageDTO>> getAllMessages(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(messageService.getAll(page,size));
     }
 
 
     @GetMapping("/admins")
-    public ResponseEntity<List<MessageDTO>> getAllMessagesForAdmins() {
-        return ResponseEntity.ok(messageService.getAllForAdmins());
+    public ResponseEntity<Page<MessageDTO>> getAllMessagesForAdmins(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(messageService.getAllForAdmins(page,size));
     }
 
 
     @GetMapping("/sender/{sender_id}")
-    public ResponseEntity<List<MessageDTO>> getAllMessagesForSender(@PathVariable("sender_id") Long senderId) {
-        return ResponseEntity.ok(messageService.getAllBySender(senderId));
+    public ResponseEntity<Page<MessageDTO>> getAllMessagesForSender(
+            @PathVariable("sender_id") Long senderId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(messageService.getAllBySender(senderId,page,size));
     }
 
     @GetMapping("/receiver/{receiver_id}")
-    public ResponseEntity<List<MessageDTO>> getAllMessagesForReceiver(@PathVariable("receiver_id") Long receiverId) {
-        return ResponseEntity.ok(messageService.getAllByReceiver(receiverId));
+    public ResponseEntity<Page<MessageDTO>> getAllMessagesForReceiver(
+            @PathVariable("receiver_id") Long receiverId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(messageService.getAllByReceiver(receiverId,page,size));
     }
 
 

@@ -8,12 +8,12 @@ import com.jefy.ibp.exceptions.EntityNotValidException;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.services.AppUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.jefy.ibp.dtos.Constants.USERS_URL;
@@ -31,8 +31,12 @@ public class UserController {
 
 
     @GetMapping
-    public ResponseEntity<List<AppUserDTO>> getAllUsers() {
-        return ResponseEntity.ok(appUserService.getAll());
+    public ResponseEntity<Page<AppUserDTO>> getAllUsers(
+            @RequestParam(value = "q", defaultValue = "") String searchKey,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(appUserService.getAll(page, size, searchKey));
     }
 
 

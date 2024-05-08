@@ -2,10 +2,10 @@ package com.jefy.ibp.services;
 
 import com.jefy.ibp.dtos.BookDTO;
 import com.jefy.ibp.dtos.BookRequestDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @Author JefYamba
@@ -13,7 +13,8 @@ import java.util.List;
  * @Since 05/05/2024
  */
 public interface BookService {
-    List<BookDTO> getAll();
+    Page<BookDTO> getAll(int page, int size, String searchKey);
+    public Page<BookDTO> getAllLatest(int page, int size);
     BookDTO getById(Long id);
     BookDTO create(BookRequestDTO bookRequestDTO);
     BookDTO update(BookRequestDTO bookRequestDTO) throws Exception;

@@ -7,6 +7,9 @@ import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.repositories.AnnouncementRepository;
 import com.jefy.ibp.services.AnnouncementService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +28,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     private final AnnouncementRepository announcementRepository;
 
     @Override
-    public List<AnnouncementDTO> getAll() {
-        return announcementRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(AnnouncementDTO::fromEntity)
-                .toList();
+    public Page<AnnouncementDTO> getAll(int page, int size) {
+        return announcementRepository.findAll(PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"createdAt")))
+                .map(AnnouncementDTO::fromEntity);
     }
 
     @Override

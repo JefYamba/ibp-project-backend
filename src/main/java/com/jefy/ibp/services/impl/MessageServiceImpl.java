@@ -9,11 +9,13 @@ import com.jefy.ibp.repositories.AppUserRepository;
 import com.jefy.ibp.repositories.MessageRepository;
 import com.jefy.ibp.services.MessageService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
 
 /**
  * @Author JefYamba
@@ -28,37 +30,33 @@ public class MessageServiceImpl implements MessageService {
     private final AppUserRepository appUserRepository;
 
     @Override
-    public List<MessageDTO> getAll() {
-        return messageRepository.findAll().stream()
-                .map(MessageDTO::fromEntity)
-                .toList();
+    public Page<MessageDTO> getAll(int page, int size) {
+        return messageRepository.findAll(PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"createdAt")))
+                .map(MessageDTO::fromEntity);
     }
 
     @Override
-    public List<MessageDTO> getAllBySender(Long senderId) {
+    public Page<MessageDTO> getAllBySender(Long senderId, int page, int size) {
         if (senderId != null && appUserRepository.existsById(senderId)) {
-            return messageRepository.findBySenderIdOrderByCreatedAtDesc(senderId).stream()
-                    .map(MessageDTO::fromEntity)
-                    .toList();
+            return messageRepository.findBySenderId(senderId, PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"createdAt")))
+                    .map(MessageDTO::fromEntity);
         }
         throw new IllegalArgumentException("Invalid AppUserDTO");
     }
 
     @Override
-    public List<MessageDTO> getAllByReceiver(Long receiverId) {
+    public Page<MessageDTO> getAllByReceiver(Long receiverId, int page, int size) {
         if (receiverId != null && appUserRepository.existsById(receiverId)) {
-            return messageRepository.findByReceiverIdOrderByCreatedAtDesc(receiverId).stream()
-                    .map(MessageDTO::fromEntity)
-                    .toList();
+            return messageRepository.findByReceiverId(receiverId, PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"createdAt")))
+                    .map(MessageDTO::fromEntity);
         }
         throw new IllegalArgumentException("Invalid id");
     }
 
     @Override
-    public List<MessageDTO> getAllForAdmins() {
-        return messageRepository.findMessageByReceiverNullOrderByCreatedAtDesc().stream()
-                .map(MessageDTO::fromEntity)
-                .toList();
+    public Page<MessageDTO> getAllForAdmins(int page, int size) {
+        return messageRepository.findMessageByReceiverNull(PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"createdAt")))
+                .map(MessageDTO::fromEntity);
     }
 
     @Override
