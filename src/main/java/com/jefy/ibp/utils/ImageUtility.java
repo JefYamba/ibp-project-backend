@@ -28,6 +28,8 @@ public class ImageUtility {
     }
 
     public static Path getImagePath(ClassEntity entity, String imageName) {
+
+
         String absolutePath = switch (entity) {
             case APP_USER -> "src/main/resources/static/images/users";
             case BOOK -> "src/main/resources/static/images/books";

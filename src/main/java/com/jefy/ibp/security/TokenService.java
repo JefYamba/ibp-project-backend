@@ -1,5 +1,6 @@
 package com.jefy.ibp.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -16,12 +17,9 @@ import java.util.stream.Collectors;
  * @Since 21/04/2024
  */
 @Service
+@RequiredArgsConstructor
 public class TokenService {
     private final JwtEncoder jwtEncoder;
-
-    public TokenService(JwtEncoder jwtEncoder) {
-        this.jwtEncoder = jwtEncoder;
-    }
 
     public String generateJwt(Authentication auth) {
         Instant now = Instant.now();
@@ -30,10 +28,13 @@ public class TokenService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
 
+        Long id = ((AppUserDetails)auth.getPrincipal()).getAppUser().getId();
+
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
                 .subject(auth.getName())
+                .claim("id", id)
                 .claim("roles", scope)
                 .build();
 

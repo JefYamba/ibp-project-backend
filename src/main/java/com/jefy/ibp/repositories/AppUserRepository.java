@@ -16,5 +16,6 @@ import java.util.Optional;
 @Repository
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByEmail(String email);
+    AppUser getAppUserByEmail(String email);
     Page<AppUser> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(String firstNameKey, String lastNameKey, String emailKey, PageRequest pageRequest);
 }

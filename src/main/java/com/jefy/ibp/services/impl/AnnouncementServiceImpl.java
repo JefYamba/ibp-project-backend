@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
 
 /**
  * @Author JefYamba
@@ -50,7 +49,6 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         if (announcementRequestDTO.getContent() == null || announcementRequestDTO.getContent().trim().isEmpty()) {
             throw new IllegalArgumentException("Can't create announcement without content");
         }
-
         return AnnouncementDTO.fromEntity(
                 announcementRepository.save(Announcement.builder()
                         .content(announcementRequestDTO.getContent())
@@ -60,7 +58,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public AnnouncementDTO update(AnnouncementRequestDTO announcementRequestDTO)  throws Exception {
+    public AnnouncementDTO update(AnnouncementRequestDTO announcementRequestDTO) {
         if (announcementRequestDTO == null || announcementRequestDTO.getId() == null) {
             throw new IllegalArgumentException("Can't update this announcement without id");
         }
@@ -81,10 +79,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public void delete(Long id) throws RecordNotFoundException {
-        if (!announcementRepository.existsById(id)){
-            throw new RecordNotFoundException("Can't find announcement with id: " + id);
-        }
+    public void delete(Long id) {
         announcementRepository.deleteById(id);
     }
 }

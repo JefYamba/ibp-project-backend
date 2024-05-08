@@ -17,6 +17,6 @@ public interface MessageService {
     Page<MessageDTO> getAllForAdmins(int page, int size);
     MessageDTO getById(Long id);
     MessageDTO create(MessageRequestDTO messageRequestDTO);
-    MessageDTO update(MessageRequestDTO messageRequestDTO) throws Exception;
+    MessageDTO update(MessageRequestDTO messageRequestDTO);
     void delete(Long id);
 }

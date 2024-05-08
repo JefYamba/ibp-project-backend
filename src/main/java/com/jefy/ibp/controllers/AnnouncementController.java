@@ -1,19 +1,21 @@
 package com.jefy.ibp.controllers;
 
-import com.jefy.ibp.dtos.AnnouncementDTO;
 import com.jefy.ibp.dtos.AnnouncementRequestDTO;
+import com.jefy.ibp.dtos.ResponseDTO;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.services.AnnouncementService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
 
 import static com.jefy.ibp.dtos.Constants.ANNOUNCEMENTS_URL;
+import static java.util.Map.of;
+import static org.springframework.http.HttpStatus.*;
 
 /**
  * @Author JefYamba
@@ -27,42 +29,156 @@ public class AnnouncementController {
     private final AnnouncementService announcementService;
 
     @GetMapping
-    public ResponseEntity<Page<AnnouncementDTO>> getAnnouncements(
+    @Operation(
+            summary = "Get all the announcements",
+            description = "Fetch a page of announcements",
+            responses =  {
+                    @ApiResponse(description = "Success", responseCode = "200")
+            }
+    )
+    public ResponseEntity<ResponseDTO> getAnnouncements(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(announcementService.getAll(page,size));
+        return ResponseEntity.ok(ResponseDTO.builder()
+                        .timeStamp(LocalDateTime.now())
+                        .status(OK)
+                        .statusCode(OK.value())
+                        .message("announcements fetched successfully")
+                        .data(of("announcements", announcementService.getAll(page,size)))
+                        .build()
+        );
     }
 
     @GetMapping("/{announcement_id}")
-    public ResponseEntity<AnnouncementDTO> get(@PathVariable("announcement_id") Long announcementId) {
-        return ResponseEntity.ok(announcementService.getById(announcementId));
+    @Operation(
+            summary = "Get announcement by Id",
+            description = "fetch a announcement using the id",
+            responses =  {
+                    @ApiResponse(description = "Success", responseCode = "200"),
+                    @ApiResponse(description = "Not found", responseCode = "404"),
+            }
+    )
+    public ResponseEntity<ResponseDTO> get(@PathVariable("announcement_id") Long announcementId) {
+        try {
+            return ResponseEntity.ok(ResponseDTO.builder()
+                            .timeStamp(LocalDateTime.now())
+                            .status(OK)
+                            .statusCode(OK.value())
+                            .message("Announcement fetched successfully")
+                            .data(of("announcement", announcementService.getById(announcementId)))
+                            .build()
+
+            );
+        } catch (RecordNotFoundException e){
+            return ResponseEntity.badRequest().body(ResponseDTO.builder()
+                            .timeStamp(LocalDateTime.now())
+                            .status(NOT_FOUND)
+                            .statusCode(NOT_FOUND.value())
+                            .message("Announcement not found")
+                            .errors(of("errors", e.getMessage()))
+                            .build()
+            );
+        }
     }
 
     @PostMapping
-    public ResponseEntity<AnnouncementDTO> register(@RequestBody AnnouncementRequestDTO announcementRequestDTO) {
-        return ResponseEntity.ok(announcementService.create(announcementRequestDTO));
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Make an announcement  [For admin only]",
+            description = "register an announcement",
+            responses =  {
+                    @ApiResponse(description = "Success", responseCode = "200"),
+                    @ApiResponse(description = "Bad request/ Invalid parameter", responseCode = "400"),
+            }
+    )
+    public ResponseEntity<ResponseDTO> register(@RequestBody AnnouncementRequestDTO announcementRequestDTO) {
+        try {
+            return ResponseEntity.ok(ResponseDTO.builder()
+                    .timeStamp(LocalDateTime.now())
+                    .status(CREATED)
+                    .statusCode(CREATED.value())
+                    .message("Announcement added successfully")
+                    .data(of("announcement", announcementService.create(announcementRequestDTO)))
+                    .build()
+
+            );
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(ResponseDTO.builder()
+                    .timeStamp(LocalDateTime.now())
+                    .status(BAD_REQUEST)
+                    .statusCode(BAD_REQUEST.value())
+                    .message("Could not create an new announcement")
+                    .errors(of("errors", e.getMessage()))
+                    .build()
+            );
+        }
     }
 
     @PutMapping
-    public ResponseEntity<AnnouncementDTO> update(@RequestBody AnnouncementRequestDTO announcementRequestDTO) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Update an announcement  [For admin only]",
+            description = "modifies an existing announcement",
+            responses =  {
+                    @ApiResponse(description = "Success", responseCode = "200"),
+                    @ApiResponse(description = "Bad request/ Invalid parameter", responseCode = "400"),
+            }
+    )
+    public ResponseEntity<ResponseDTO> update(@RequestBody AnnouncementRequestDTO announcementRequestDTO) {
         try {
-            return ResponseEntity.ok(announcementService.update(announcementRequestDTO));
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.ok(ResponseDTO.builder()
+                    .timeStamp(LocalDateTime.now())
+                    .status(OK)
+                    .statusCode(OK.value())
+                    .message("Announcement updated successfully")
+                    .data(of("announcement", announcementService.update(announcementRequestDTO)))
+                    .build()
+
+            );
+        } catch (IllegalArgumentException | RecordNotFoundException e){
+            return ResponseEntity.badRequest().body(ResponseDTO.builder()
+                    .timeStamp(LocalDateTime.now())
+                    .status(BAD_REQUEST)
+                    .statusCode(BAD_REQUEST.value())
+                    .message("Could not update announcement")
+                    .errors(of("errors", e.getMessage()))
+                    .build()
+            );
         }
     }
 
     @DeleteMapping("/{announcement_id}")
-    public ResponseEntity<Map<String,String>> delete(@PathVariable("announcement_id") Long announcementId) {
-        Map<String,String> response = new HashMap<>();
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Delete an announcement  [For admin only]",
+            description = "Delete an existing announcement",
+            responses =  {
+                    @ApiResponse(description = "Success", responseCode = "200"),
+                    @ApiResponse(description = "Bad request/ Invalid parameter", responseCode = "400"),
+            }
+    )
+    public ResponseEntity<ResponseDTO> delete(@PathVariable("announcement_id") Long announcementId) {
+
         try {
             announcementService.delete(announcementId);
-            response.put("response", "announcement deleted successfully");
-            return ResponseEntity.ok(response);
-        } catch (RecordNotFoundException e) {
-            response.put("errors",e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.ok(ResponseDTO.builder()
+                    .timeStamp(LocalDateTime.now())
+                    .status(OK)
+                    .statusCode(OK.value())
+                    .message("Announcement deleted successfully")
+                    .build()
+
+            );
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(ResponseDTO.builder()
+                    .timeStamp(LocalDateTime.now())
+                    .status(BAD_REQUEST)
+                    .statusCode(BAD_REQUEST.value())
+                    .message("Announcement does not exist")
+                    .errors(of("errors", e.getMessage()))
+                    .build()
+            );
         }
     }
 }

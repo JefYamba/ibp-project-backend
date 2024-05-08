@@ -14,10 +14,10 @@ import java.io.IOException;
  */
 public interface BookService {
     Page<BookDTO> getAll(int page, int size, String searchKey);
-    public Page<BookDTO> getAllLatest(int page, int size);
+    Page<BookDTO> getAllLatest(int page, int size);
     BookDTO getById(Long id);
     BookDTO create(BookRequestDTO bookRequestDTO);
-    BookDTO update(BookRequestDTO bookRequestDTO) throws Exception;
+    BookDTO update(BookRequestDTO bookRequestDTO);
     void delete(Long id) throws IOException;
     void setImage(Long bookId, MultipartFile image) throws IOException;
 }

@@ -4,7 +4,6 @@ import com.jefy.ibp.utils.RSAKeyProperties;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
@@ -14,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,7 +28,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 /**
@@ -39,7 +38,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-
+@EnableMethodSecurity()
 public class SecurityConfig {
 
     private final RSAKeyProperties keys;
@@ -75,21 +74,6 @@ public class SecurityConfig {
                             "/swagger-ui.html",
                             "/webjars/**"
                     ).permitAll();
-                    auth.requestMatchers(GET,"/ibp/v1/users").hasRole("ADMIN");
-                    auth.requestMatchers(POST,"/ibp/v1/users").hasRole("ADMIN");
-                    auth.requestMatchers(PUT,"/ibp/v1/users/*/update_role").hasRole("ADMIN");
-                    auth.requestMatchers(DELETE,"/ibp/v1/users/**").hasRole("ADMIN");
-
-                    auth.requestMatchers(GET,"/ibp/v1/messages", "/ibp/v1/messages/admins").hasRole("ADMIN");
-
-                    auth.requestMatchers(POST,"/ibp/v1/books/**").hasRole("ADMIN");
-                    auth.requestMatchers(PUT,"/ibp/v1/books/**").hasRole("ADMIN");
-                    auth.requestMatchers(DELETE,"/ibp/v1/books/**").hasRole("ADMIN");
-
-                    auth.requestMatchers(POST,"/ibp/v1/announcements/**").hasRole("ADMIN");
-                    auth.requestMatchers(PUT,"/ibp/v1/announcements/**").hasRole("ADMIN");
-                    auth.requestMatchers(DELETE,"/ibp/v1/announcements/**").hasRole("ADMIN");
-
 
                     auth.anyRequest().authenticated();
 //                    auth.anyRequest().permitAll();

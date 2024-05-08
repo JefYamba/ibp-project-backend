@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static com.jefy.ibp.enums.ClassEntity.BOOK;
-import static com.jefy.ibp.services.impl.ImageService.deleteImageFileFromDirectory;
+import static com.jefy.ibp.services.impl.ImageServiceImpl.deleteImageFileFromDirectory;
 
 /**
  * @Author JefYamba
@@ -63,7 +63,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDTO create(BookRequestDTO bookRequestDTO) {
         if (bookRequestDTO == null)
-            throw new IllegalArgumentException("bookDTO cannot be null");
+            throw new IllegalArgumentException("book cannot be null");
 
         Map<String, String> errors = BookValidator.validateBook(bookRequestDTO);
 
@@ -77,9 +77,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDTO update(BookRequestDTO bookRequestDTO) throws Exception {
+    public BookDTO update(BookRequestDTO bookRequestDTO){
         if (bookRequestDTO == null || bookRequestDTO.getId() == null)
-            throw new IllegalArgumentException("BookRequestDTO Or Id cannot be null");
+            throw new IllegalArgumentException("Book or id cannot be null");
 
         Map<String, String> errorsUser = BookValidator.validateBook(bookRequestDTO);
         if (!errorsUser.isEmpty()){
@@ -125,7 +125,7 @@ public class BookServiceImpl implements BookService {
             deleteImageFileFromDirectory(BOOK, book.getImage());
         }
 
-        book.setImage(ImageService.saveImageInDirectory(BOOK, bookId, image));
+        book.setImage(ImageServiceImpl.saveImageInDirectory(BOOK, bookId, image));
         bookRepository.save(book);
     }
 }

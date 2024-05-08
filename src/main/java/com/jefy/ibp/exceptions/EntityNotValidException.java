@@ -13,7 +13,7 @@ import java.util.Map;
 public class EntityNotValidException extends RuntimeException {
     private final Map<String, String> errors;
     public EntityNotValidException(Map<String, String> errors) {
-        super("Entity not valid: ");
+        super("Entity not valid");
         this.errors = errors;
     }
 }

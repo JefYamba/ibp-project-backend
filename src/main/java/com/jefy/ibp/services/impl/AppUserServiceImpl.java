@@ -4,6 +4,7 @@ import com.jefy.ibp.dtos.*;
 import com.jefy.ibp.entities.AppUser;
 import com.jefy.ibp.enums.Role;
 import com.jefy.ibp.exceptions.EntityNotValidException;
+import com.jefy.ibp.exceptions.OperationNotAuthorizedException;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.repositories.AppUserRepository;
 import com.jefy.ibp.services.AppUserService;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.jefy.ibp.dtos.Constants.DEFAULT_PASSWORD;
 import static com.jefy.ibp.enums.ClassEntity.APP_USER;
-import static com.jefy.ibp.services.impl.ImageService.deleteImageFileFromDirectory;
+import static com.jefy.ibp.services.impl.ImageServiceImpl.deleteImageFileFromDirectory;
 
 /**
  * @Author JefYamba
@@ -52,6 +55,10 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUserDTO getById(Long id) {
+        AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!Objects.equals(loggedUser.getId(), id) && loggedUser.getRole() != Role.ADMIN )
+            throw new OperationNotAuthorizedException("this operation is not allowed");
+
         return appUserRepository.findById(id).map(AppUserDTO::fromEntity).orElseThrow(
                 () -> new RecordNotFoundException("user does not exist")
         );
@@ -84,10 +91,17 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUserDTO update(AppUserRequestDTO appUserRequestDTO)  throws Exception {
+    public AppUserDTO update(AppUserRequestDTO appUserRequestDTO) {
 
-        if (appUserRequestDTO == null || appUserRequestDTO.getId() == null)
-            throw new IllegalArgumentException("AppUserDTO Or Id cannot be null");
+        if (appUserRequestDTO == null)
+            throw new IllegalArgumentException("user cannot be null");
+
+        AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!Objects.equals(loggedUser.getId(), appUserRequestDTO.getId()) && loggedUser.getRole() != Role.ADMIN )
+            throw new OperationNotAuthorizedException("this operation is not allowed");
+
+        if (appUserRequestDTO.getId() == null)
+            throw new IllegalArgumentException("id cannot be null");
 
         Map<String, String> errorsUser = AppUserValidator.validateUser(appUserRequestDTO);
         if (!errorsUser.isEmpty()){
@@ -135,7 +149,12 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public void changePassWord(Long userId, ChangePWRequestDTO changePWRequestDTO){
-        if (changePWRequestDTO == null || userId == null ) {
+        AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        if (!Objects.equals(loggedUser.getId(), userId))
+            throw new OperationNotAuthorizedException("this operation is not allowed");
+
+        if (changePWRequestDTO == null) {
             throw new IllegalArgumentException("User Id and email cannot be null");
         }
 
@@ -157,6 +176,11 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public void setImage(Long userId, MultipartFile image)  throws IOException {
 
+        AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!Objects.equals(loggedUser.getId(), userId) && loggedUser.getRole() != Role.ADMIN )
+            throw new OperationNotAuthorizedException("this operation is not allowed");
+
+
         if (image == null || userId == null || image.isEmpty() ){
             throw new IllegalArgumentException("User Id and image cannot be null");
         }
@@ -169,7 +193,7 @@ public class AppUserServiceImpl implements AppUserService {
             deleteImageFileFromDirectory(APP_USER, user.getImage());
         }
 
-        user.setImage(ImageService.saveImageInDirectory(APP_USER, userId, image));
+        user.setImage(ImageServiceImpl.saveImageInDirectory(APP_USER, userId, image));
         appUserRepository.save(user);
     }
 
