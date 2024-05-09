@@ -16,16 +16,16 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AnnouncementDTO {
+public class AnnouncementResponse {
     private Long id;
     private String content;
     private Instant createdAt;
 
-    public static AnnouncementDTO fromEntity(Announcement announcement) {
+    public static AnnouncementResponse fromEntity(Announcement announcement) {
         if (announcement == null || announcement.getId() == null) {
             return null;
         }
-        return AnnouncementDTO.builder()
+        return AnnouncementResponse.builder()
                 .id(announcement.getId())
                 .content(announcement.getContent())
                 .createdAt(announcement.getCreatedAt())

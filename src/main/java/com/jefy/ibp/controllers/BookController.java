@@ -1,25 +1,21 @@
 package com.jefy.ibp.controllers;
 
-import com.jefy.ibp.dtos.BookRequestDTO;
-import com.jefy.ibp.dtos.ResponseDTO;
-import com.jefy.ibp.exceptions.EntityNotValidException;
-import com.jefy.ibp.exceptions.RecordNotFoundException;
+import com.jefy.ibp.dtos.BookRequest;
+import com.jefy.ibp.dtos.BookResponse;
 import com.jefy.ibp.services.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 import static com.jefy.ibp.dtos.Constants.BOOKS_URL;
-import static java.util.Map.of;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.HttpStatus.CREATED;
 
 /**
  * @Author JefYamba
@@ -40,19 +36,12 @@ public class BookController {
                     @ApiResponse(description = "Success", responseCode = "200")
             }
     )
-    public ResponseEntity<ResponseDTO> getAllBooks(
+    public ResponseEntity<Page<BookResponse>> getAllBooks(
             @RequestParam(defaultValue = "") String searchKey,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(ResponseDTO.builder()
-                .timeStamp(LocalDateTime.now())
-                .status(OK)
-                .statusCode(OK.value())
-                .message("books fetched successfully")
-                .data(of("books", bookService.getAll(page,size, searchKey)))
-                .build()
-        );
+        return ResponseEntity.status(OK).body(bookService.getAll(page,size, searchKey));
     }
 
     @GetMapping("/latest")
@@ -63,18 +52,11 @@ public class BookController {
                     @ApiResponse(description = "Success", responseCode = "200")
             }
     )
-    public ResponseEntity<ResponseDTO> getAllLatestBooks(
+    public ResponseEntity<Page<BookResponse>> getAllLatestBooks(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(ResponseDTO.builder()
-                .timeStamp(LocalDateTime.now())
-                .status(OK)
-                .statusCode(OK.value())
-                .message("books fetched successfully")
-                .data(of("books", bookService.getAllLatest(page,size)))
-                .build()
-        );
+        return ResponseEntity.status(OK).body(bookService.getAllLatest(page,size));
     }
 
     @GetMapping("/{book_id}")
@@ -86,27 +68,8 @@ public class BookController {
                     @ApiResponse(description = "Not found", responseCode = "404"),
             }
     )
-    public ResponseEntity<ResponseDTO> get(@PathVariable("book_id") Long bookId) {
-        try {
-            return ResponseEntity.ok(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(OK)
-                    .statusCode(OK.value())
-                    .message("book fetched successfully")
-                    .data(of("book", bookService.getById(bookId)))
-                    .build()
-
-            );
-        } catch (RecordNotFoundException e){
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(NOT_FOUND)
-                    .statusCode(NOT_FOUND.value())
-                    .message("book not found")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        }
+    public ResponseEntity<BookResponse> get(@PathVariable("book_id") Long bookId) {
+        return ResponseEntity.status(OK).body(bookService.getById(bookId));
     }
 
     @PostMapping
@@ -120,37 +83,8 @@ public class BookController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<ResponseDTO> register(@RequestBody BookRequestDTO bookRequestDTO) {
-        try {
-            return ResponseEntity.ok(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(CREATED)
-                    .statusCode(CREATED.value())
-                    .message("Book added successfully")
-                    .data(of("book", bookService.create(bookRequestDTO)))
-                    .build()
-
-            );
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .message("Could not create an new book")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        } catch (EntityNotValidException e){
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(NOT_ACCEPTABLE)
-                    .statusCode(NOT_ACCEPTABLE.value())
-                    .message("Could not create an new book, all the required field must be correctly filled")
-                    .errors(of("errors", e.getErrors()))
-                    .build()
-            );
-        }
-
+    public ResponseEntity<BookResponse> register(@RequestBody BookRequest bookRequest) {
+        return ResponseEntity.status(OK).body(bookService.create(bookRequest));
     }
 
 
@@ -165,36 +99,8 @@ public class BookController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<ResponseDTO> update(@RequestBody BookRequestDTO bookRequestDTO) {
-        try {
-            return ResponseEntity.ok(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(OK)
-                    .statusCode(OK.value())
-                    .message("Book updated successfully")
-                    .data(of("book", bookService.update(bookRequestDTO)))
-                    .build()
-
-            );
-        } catch (IllegalArgumentException | RecordNotFoundException e){
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .message("Could not update book")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        } catch (EntityNotValidException e){
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(NOT_ACCEPTABLE)
-                    .statusCode(NOT_ACCEPTABLE.value())
-                    .message("Could not update an new book, all the required field must be correctly filled")
-                    .errors(of("errors", e.getErrors()))
-                    .build()
-            );
-        }
+    public ResponseEntity<BookResponse> update(@RequestBody BookRequest bookRequest) {
+        return ResponseEntity.status(OK).body(bookService.update(bookRequest));
     }
 
     @DeleteMapping("/{book_id}")
@@ -208,36 +114,9 @@ public class BookController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500"),
             }
     )
-    public ResponseEntity<ResponseDTO> delete(@PathVariable("book_id") Long bookId) {
-        try {
-            bookService.delete(bookId);
-            return ResponseEntity.ok(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(OK)
-                    .statusCode(OK.value())
-                    .message("Book deleted successfully")
-                    .build()
-
-            );
-        }catch (RecordNotFoundException e){
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .message("Book does not exist")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(INTERNAL_SERVER_ERROR)
-                    .statusCode(INTERNAL_SERVER_ERROR.value())
-                    .message("Could not delete the book, problem occurred on deleting the image")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        }
+    public ResponseEntity<String> delete(@PathVariable("book_id") Long bookId) throws IOException {
+        bookService.delete(bookId);
+        return ResponseEntity.status(OK).body("Book deleted successfully");
     }
 
     @PostMapping("/{book_id}")
@@ -251,35 +130,8 @@ public class BookController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500"),
             }
     )
-    public ResponseEntity<ResponseDTO> setImageCover(@PathVariable("book_id") Long bookId, @RequestPart MultipartFile image) {
-        try {
-            bookService.setImage(bookId, image);
-            return ResponseEntity.ok(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(OK)
-                    .statusCode(OK.value())
-                    .message("Book deleted successfully")
-                    .build()
-
-            );
-        }catch (IllegalArgumentException | RecordNotFoundException e){
-            return ResponseEntity.badRequest().body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .message("Could not save the image")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(INTERNAL_SERVER_ERROR)
-                    .statusCode(INTERNAL_SERVER_ERROR.value())
-                    .message("Could not save the image")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        }
+    public ResponseEntity<String> setImageCover(@PathVariable("book_id") Long bookId, @RequestPart MultipartFile image) throws IOException {
+        bookService.setImage(bookId, image);
+        return ResponseEntity.status(OK).body("Book deleted successfully");
     }
 }

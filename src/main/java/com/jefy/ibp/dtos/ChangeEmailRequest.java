@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChangeEmailRequestDTO {
+public class ChangeEmailRequest {
     private Long userId;
     private String email;
 }

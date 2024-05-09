@@ -1,6 +1,6 @@
 package com.jefy.ibp.validators;
 
-import com.jefy.ibp.dtos.AppUserRequestDTO;
+import com.jefy.ibp.dtos.UserRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,16 +13,16 @@ import java.util.regex.Pattern;
  * @Since 01/05/2024
  */
 public class AppUserValidator {
-    public static Map<String, String> validateUser(AppUserRequestDTO appUserRequestDTO) {
+    public static Map<String, String> validateUser(UserRequest userRequest) {
         Map<String, String> errors = new HashMap<>();
 
-        if (appUserRequestDTO.getFirstName() == null || appUserRequestDTO.getFirstName().isBlank()) {
+        if (userRequest.getFirstName() == null || userRequest.getFirstName().isBlank()) {
             errors.put("firstName", "First name is required");
         }
-        if (appUserRequestDTO.getLastName() == null || appUserRequestDTO.getLastName().isBlank()) {
+        if (userRequest.getLastName() == null || userRequest.getLastName().isBlank()) {
             errors.put("lastName", "Last name is required");
         }
-        if (appUserRequestDTO.getEmail() == null || appUserRequestDTO.getEmail().isBlank() || !isValidEmail(appUserRequestDTO.getEmail())) {
+        if (userRequest.getEmail() == null || userRequest.getEmail().isBlank() || !isValidEmail(userRequest.getEmail())) {
             errors.put("email", "Email is required or is not a valid");
         }
         return errors;

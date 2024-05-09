@@ -1,7 +1,7 @@
 package com.jefy.ibp.services.impl;
 
-import com.jefy.ibp.dtos.BookDTO;
-import com.jefy.ibp.dtos.BookRequestDTO;
+import com.jefy.ibp.dtos.BookResponse;
+import com.jefy.ibp.dtos.BookRequest;
 import com.jefy.ibp.entities.Book;
 import com.jefy.ibp.exceptions.EntityNotValidException;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
@@ -33,71 +33,71 @@ import static com.jefy.ibp.services.impl.ImageServiceImpl.deleteImageFileFromDir
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     @Override
-    public Page<BookDTO> getAll(int page, int size, String searchKey) {
+    public Page<BookResponse> getAll(int page, int size, String searchKey) {
 
         if (searchKey == null || searchKey.isBlank()) {
             return bookRepository.findAll(PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,"title")))
-                    .map(BookDTO::fromEntity);
+                    .map(BookResponse::fromEntity);
         } else {
             return bookRepository.
                 findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrPublisherContainingIgnoreCaseOrIsbnContainingIgnoreCaseOrGenreContainingIgnoreCaseOrSummaryContainingIgnoreCase(
                     searchKey, searchKey,searchKey,searchKey,searchKey,searchKey, PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,"title"))
                 )
-                .map(BookDTO::fromEntity);
+                .map(BookResponse::fromEntity);
         }
     }
 
-    public Page<BookDTO> getAllLatest(int page, int size) {
+    public Page<BookResponse> getAllLatest(int page, int size) {
         return bookRepository.findAll(PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"id")))
-                .map(BookDTO::fromEntity);
+                .map(BookResponse::fromEntity);
 
     }
 
     @Override
-    public BookDTO getById(Long id) {
-        return bookRepository.findById(id).map(BookDTO::fromEntity).orElseThrow(
+    public BookResponse getById(Long id) {
+        return bookRepository.findById(id).map(BookResponse::fromEntity).orElseThrow(
                 () -> new RecordNotFoundException("book does not exist")
         );
     }
 
     @Override
-    public BookDTO create(BookRequestDTO bookRequestDTO) {
-        if (bookRequestDTO == null)
+    public BookResponse create(BookRequest bookRequest) {
+        if (bookRequest == null)
             throw new IllegalArgumentException("book cannot be null");
 
-        Map<String, String> errors = BookValidator.validateBook(bookRequestDTO);
+        Map<String, String> errors = BookValidator.validateBook(bookRequest);
 
         if (!errors.isEmpty()){
             throw new EntityNotValidException(errors);
         }
 
-        return BookDTO.fromEntity(bookRepository.save(
-                BookRequestDTO.toEntity(bookRequestDTO)
+        return BookResponse.fromEntity(bookRepository.save(
+                BookRequest.toEntity(bookRequest)
         ));
     }
 
     @Override
-    public BookDTO update(BookRequestDTO bookRequestDTO){
-        if (bookRequestDTO == null || bookRequestDTO.getId() == null)
+    public BookResponse update(BookRequest bookRequest){
+        if (bookRequest == null || bookRequest.getId() == null)
             throw new IllegalArgumentException("Book or id cannot be null");
 
-        Map<String, String> errorsUser = BookValidator.validateBook(bookRequestDTO);
+        Map<String, String> errorsUser = BookValidator.validateBook(bookRequest);
         if (!errorsUser.isEmpty()){
             throw new EntityNotValidException(errorsUser);
         }
 
-        Book book = bookRepository.findById(bookRequestDTO.getId())
+        Book book = bookRepository.findById(bookRequest.getId())
                 .orElseThrow(() -> new RecordNotFoundException("Book does not exist"));
 
-        book.setTitle(bookRequestDTO.getTitle());
-        book.setAuthor(bookRequestDTO.getAuthor());
-        book.setPublisher(bookRequestDTO.getPublisher());
-        book.setPublicationDate(bookRequestDTO.getPublicationDate());
-        book.setIsbn(bookRequestDTO.getIsbn());
-        book.setGenre(bookRequestDTO.getGenre());
-        book.setSummary(bookRequestDTO.getSummary());
+        book.setTitle(bookRequest.getTitle());
+        book.setAuthor(bookRequest.getAuthor());
+        book.setPublisher(bookRequest.getPublisher());
+        book.setPublicationDate(bookRequest.getPublicationDate());
+        book.setIsbn(bookRequest.getIsbn());
+        book.setGenre(bookRequest.getGenre());
+        book.setSummary(bookRequest.getSummary());
 
-        return BookDTO.fromEntity(bookRepository.save(book));
+        return BookResponse.fromEntity(bookRepository.save(book));
     }
 
     @Override

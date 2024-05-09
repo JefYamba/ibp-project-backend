@@ -1,7 +1,7 @@
 package com.jefy.ibp.services;
 
-import com.jefy.ibp.dtos.MessageDTO;
-import com.jefy.ibp.dtos.MessageRequestDTO;
+import com.jefy.ibp.dtos.MessageResponse;
+import com.jefy.ibp.dtos.MessageRequest;
 import org.springframework.data.domain.Page;
 
 /**
@@ -11,12 +11,12 @@ import org.springframework.data.domain.Page;
  */
 public interface MessageService {
 
-    Page<MessageDTO> getAll(int page, int size);
-    Page<MessageDTO> getAllBySender(Long senderId, int page, int size);
-    Page<MessageDTO> getAllByReceiver(Long receiverId, int page, int size);
-    Page<MessageDTO> getAllForAdmins(int page, int size);
-    MessageDTO getById(Long id);
-    MessageDTO create(MessageRequestDTO messageRequestDTO);
-    MessageDTO update(MessageRequestDTO messageRequestDTO);
+    Page<MessageResponse> getAll(int page, int size);
+    Page<MessageResponse> getAllBySender(Long senderId, int page, int size);
+    Page<MessageResponse> getAllByReceiver(Long receiverId, int page, int size);
+    Page<MessageResponse> getAllForAdmins(int page, int size);
+    MessageResponse getById(Long id);
+    MessageResponse create(MessageRequest messageRequest);
+    MessageResponse update(MessageRequest messageRequest);
     void delete(Long id);
 }

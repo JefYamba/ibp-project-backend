@@ -13,19 +13,19 @@ import java.io.IOException;
  * @Since 01/05/2024
  */
 public interface AppUserService {
-    Page<AppUserDTO> getAll(int page, int size, String searchKey);
+    Page<UserResponse> getAll(int page, int size, String searchKey);
 
-    AppUserDTO getById(Long id);
+    UserResponse getById(Long id);
 
-    AppUserDTO create(AppUserRequestDTO appUserRequestDTO);
+    UserResponse create(UserRequest userRequest);
 
-    AppUserDTO update(AppUserRequestDTO appUserRequestDTO);
+    UserResponse update(UserRequest userRequest);
 
     void changeRole(Long userId, Role role);
 
     void delete(Long id)throws IOException;
 
-    void changePassWord(Long userId, ChangePWRequestDTO changePWRequestDTO);
+    void changePassWord(Long userId, ChangePasswordRequest changePasswordRequest);
 
     void setImage(Long userId, MultipartFile image)  throws IOException;
 }

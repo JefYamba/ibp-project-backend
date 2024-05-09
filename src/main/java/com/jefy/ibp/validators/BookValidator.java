@@ -1,12 +1,9 @@
 package com.jefy.ibp.validators;
 
-import com.jefy.ibp.dtos.AppUserRequestDTO;
-import com.jefy.ibp.dtos.BookRequestDTO;
+import com.jefy.ibp.dtos.BookRequest;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @Author JefYamba
@@ -14,16 +11,16 @@ import java.util.regex.Pattern;
  * @Since 01/05/2024
  */
 public class BookValidator {
-    public static Map<String, String> validateBook(BookRequestDTO bookRequestDTO) {
+    public static Map<String, String> validateBook(BookRequest bookRequest) {
         Map<String, String> errors = new HashMap<>();
 
-        if (bookRequestDTO.getTitle() == null || bookRequestDTO.getTitle().isBlank()) {
+        if (bookRequest.getTitle() == null || bookRequest.getTitle().isBlank()) {
             errors.put("title", "Title is required");
         }
-        if (bookRequestDTO.getAuthor() == null || bookRequestDTO.getAuthor().isBlank()) {
+        if (bookRequest.getAuthor() == null || bookRequest.getAuthor().isBlank()) {
             errors.put("author", "Author is required");
         }
-        if (bookRequestDTO.getGenre() == null || bookRequestDTO.getGenre().isBlank()) {
+        if (bookRequest.getGenre() == null || bookRequest.getGenre().isBlank()) {
             errors.put("genre", "Genre is required");
         }
         return errors;

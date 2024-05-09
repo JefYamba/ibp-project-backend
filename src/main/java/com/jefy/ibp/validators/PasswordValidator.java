@@ -1,6 +1,6 @@
 package com.jefy.ibp.validators;
 
-import com.jefy.ibp.dtos.ChangePWRequestDTO;
+import com.jefy.ibp.dtos.ChangePasswordRequest;
 import com.jefy.ibp.entities.AppUser;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,21 +19,21 @@ import java.util.Map;
 public class PasswordValidator {
     private  final PasswordEncoder passwordEncoder;
 
-    public   Map<String, String> validatePassword(ChangePWRequestDTO changePWRequestDTO, AppUser appUser) {
+    public   Map<String, String> validatePassword(ChangePasswordRequest changePasswordRequest, AppUser appUser) {
         Map<String, String> errors = new HashMap<>();
 
-        if (changePWRequestDTO.getOldPassword() == null || changePWRequestDTO.getOldPassword().isBlank()) {
+        if (changePasswordRequest.getOldPassword() == null || changePasswordRequest.getOldPassword().isBlank()) {
             errors.put("oldPassword", "Old password is empty");
-        } else if (!passwordEncoder.matches(changePWRequestDTO.getOldPassword(),appUser.getPassword())) {
+        } else if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(),appUser.getPassword())) {
             errors.put("oldPassword", "Old password is incorrect");
         }
-        if (changePWRequestDTO.getNewPassword() == null || changePWRequestDTO.getNewPassword().isBlank() ||
-                changePWRequestDTO.getNewPassword().length() < 4)
+        if (changePasswordRequest.getNewPassword() == null || changePasswordRequest.getNewPassword().isBlank() ||
+                changePasswordRequest.getNewPassword().length() < 4)
         {
             errors.put("newPassword", "New password must be at least 4 characters");
         }
-        if (changePWRequestDTO.getConfirmPassword() == null || changePWRequestDTO.getConfirmPassword().isBlank() ||
-                !changePWRequestDTO.getConfirmPassword().equals(changePWRequestDTO.getNewPassword()))
+        if (changePasswordRequest.getConfirmPassword() == null || changePasswordRequest.getConfirmPassword().isBlank() ||
+                !changePasswordRequest.getConfirmPassword().equals(changePasswordRequest.getNewPassword()))
         {
             errors.put("confirmPassword", "Passwords do not match");
         }

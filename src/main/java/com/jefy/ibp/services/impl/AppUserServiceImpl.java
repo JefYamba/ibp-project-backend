@@ -42,84 +42,84 @@ public class AppUserServiceImpl implements AppUserService {
     private final PasswordValidator passwordValidator;
 
     @Override
-    public Page<AppUserDTO> getAll(int page, int size, String searchKey) {
+    public Page<UserResponse> getAll(int page, int size, String searchKey) {
 
         if (searchKey == null || searchKey.isBlank()) {
-            return appUserRepository.findAll(PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,"firstName","lastName"))).map(AppUserDTO::fromEntity);
+            return appUserRepository.findAll(PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,"firstName","lastName"))).map(UserResponse::fromEntity);
         } else {
             return appUserRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(searchKey, searchKey, searchKey,
-                    PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,"firstName","lastName"))).map(AppUserDTO::fromEntity
+                    PageRequest.of(page,size, Sort.by(Sort.Direction.ASC,"firstName","lastName"))).map(UserResponse::fromEntity
             );
         }
     }
 
     @Override
-    public AppUserDTO getById(Long id) {
+    public UserResponse getById(Long id) {
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!Objects.equals(loggedUser.getId(), id) && loggedUser.getRole() != Role.ADMIN )
             throw new OperationNotAuthorizedException("this operation is not allowed");
 
-        return appUserRepository.findById(id).map(AppUserDTO::fromEntity).orElseThrow(
+        return appUserRepository.findById(id).map(UserResponse::fromEntity).orElseThrow(
                 () -> new RecordNotFoundException("user does not exist")
         );
     }
 
     @Override
-    public AppUserDTO create(AppUserRequestDTO appUserRequestDTO){
-        if (appUserRequestDTO == null)
-            throw new IllegalArgumentException("AppUserDTO cannot be null");
+    public UserResponse create(UserRequest userRequest){
+        if (userRequest == null)
+            throw new IllegalArgumentException("UserResponse cannot be null");
 
-        Map<String, String> errors = AppUserValidator.validateUser(appUserRequestDTO);
+        Map<String, String> errors = AppUserValidator.validateUser(userRequest);
 
         if (!errors.isEmpty()){
             throw new EntityNotValidException(errors);
         }
         String encodedPassword = passwordEncoder.encode(DEFAULT_PASSWORD);
         AppUser appUser = AppUser.builder()
-                .firstName(appUserRequestDTO.getFirstName())
-                .lastName(appUserRequestDTO.getLastName())
-                .email(appUserRequestDTO.getEmail())
-                .gender(appUserRequestDTO.getGender())
-                .birthDate(appUserRequestDTO.getBirthDate())
-                .phoneNumber(appUserRequestDTO.getPhoneNumber())
-                .address(appUserRequestDTO.getAddress())
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
+                .email(userRequest.getEmail())
+                .gender(userRequest.getGender())
+                .birthDate(userRequest.getBirthDate())
+                .phoneNumber(userRequest.getPhoneNumber())
+                .address(userRequest.getAddress())
                 .password(encodedPassword)
                 .role(Role.USER)
                 .build();
 
-        return AppUserDTO.fromEntity(appUserRepository.save(appUser));
+        return UserResponse.fromEntity(appUserRepository.save(appUser));
     }
 
     @Override
-    public AppUserDTO update(AppUserRequestDTO appUserRequestDTO) {
+    public UserResponse update(UserRequest userRequest) {
 
-        if (appUserRequestDTO == null)
+        if (userRequest == null)
             throw new IllegalArgumentException("user cannot be null");
 
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        if (!Objects.equals(loggedUser.getId(), appUserRequestDTO.getId()) && loggedUser.getRole() != Role.ADMIN )
+        if (!Objects.equals(loggedUser.getId(), userRequest.getId()) && loggedUser.getRole() != Role.ADMIN )
             throw new OperationNotAuthorizedException("this operation is not allowed");
 
-        if (appUserRequestDTO.getId() == null)
+        if (userRequest.getId() == null)
             throw new IllegalArgumentException("id cannot be null");
 
-        Map<String, String> errorsUser = AppUserValidator.validateUser(appUserRequestDTO);
+        Map<String, String> errorsUser = AppUserValidator.validateUser(userRequest);
         if (!errorsUser.isEmpty()){
             throw new EntityNotValidException(errorsUser);
         }
 
-        AppUser appUser = appUserRepository.findById(appUserRequestDTO.getId())
+        AppUser appUser = appUserRepository.findById(userRequest.getId())
                 .orElseThrow(() -> new RecordNotFoundException("user does not exist"));
 
-        appUser.setFirstName(appUserRequestDTO.getFirstName());
-        appUser.setLastName(appUserRequestDTO.getLastName());
-        appUser.setEmail(appUserRequestDTO.getEmail());
-        appUser.setGender(appUserRequestDTO.getGender());
-        appUser.setBirthDate(appUserRequestDTO.getBirthDate());
-        appUser.setPhoneNumber(appUserRequestDTO.getPhoneNumber());
-        appUser.setAddress(appUserRequestDTO.getAddress());
+        appUser.setFirstName(userRequest.getFirstName());
+        appUser.setLastName(userRequest.getLastName());
+        appUser.setEmail(userRequest.getEmail());
+        appUser.setGender(userRequest.getGender());
+        appUser.setBirthDate(userRequest.getBirthDate());
+        appUser.setPhoneNumber(userRequest.getPhoneNumber());
+        appUser.setAddress(userRequest.getAddress());
 
-        return AppUserDTO.fromEntity(appUserRepository.save(appUser));
+        return UserResponse.fromEntity(appUserRepository.save(appUser));
     }
 
 
@@ -148,13 +148,13 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public void changePassWord(Long userId, ChangePWRequestDTO changePWRequestDTO){
+    public void changePassWord(Long userId, ChangePasswordRequest changePasswordRequest){
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
         if (!Objects.equals(loggedUser.getId(), userId))
             throw new OperationNotAuthorizedException("this operation is not allowed");
 
-        if (changePWRequestDTO == null) {
+        if (changePasswordRequest == null) {
             throw new IllegalArgumentException("User Id and email cannot be null");
         }
 
@@ -162,14 +162,14 @@ public class AppUserServiceImpl implements AppUserService {
             throw new RecordNotFoundException("user does not exist");
         }
 
-        Map<String, String> errors = passwordValidator.validatePassword(changePWRequestDTO, appUserRepository.findById(userId).orElse(null));
+        Map<String, String> errors = passwordValidator.validatePassword(changePasswordRequest, appUserRepository.findById(userId).orElse(null));
         if (!errors.isEmpty()){
             throw new EntityNotValidException(errors);
         }
         AppUser appUser = appUserRepository.findById(userId).orElseThrow(
                 () -> new RecordNotFoundException("user does not exist")
         );
-        appUser.setPassword(passwordEncoder.encode(changePWRequestDTO.getNewPassword()));
+        appUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         appUserRepository.save(appUser);
     }
 

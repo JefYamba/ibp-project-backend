@@ -14,7 +14,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginResponseDTO {
+public class AuthentificationResponse {
     private String token;
-    private AppUserDTO appUserDto;
 }

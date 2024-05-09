@@ -1,7 +1,7 @@
 package com.jefy.ibp.services.impl;
 
-import com.jefy.ibp.dtos.AnnouncementDTO;
-import com.jefy.ibp.dtos.AnnouncementRequestDTO;
+import com.jefy.ibp.dtos.AnnouncementResponse;
+import com.jefy.ibp.dtos.AnnouncementRequest;
 import com.jefy.ibp.entities.Announcement;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.repositories.AnnouncementRepository;
@@ -27,53 +27,53 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     private final AnnouncementRepository announcementRepository;
 
     @Override
-    public Page<AnnouncementDTO> getAll(int page, int size) {
+    public Page<AnnouncementResponse> getAll(int page, int size) {
         return announcementRepository.findAll(PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"createdAt")))
-                .map(AnnouncementDTO::fromEntity);
+                .map(AnnouncementResponse::fromEntity);
     }
 
     @Override
-    public AnnouncementDTO getById(Long id) {
-        return announcementRepository.findById(id).map(AnnouncementDTO::fromEntity).orElseThrow(
+    public AnnouncementResponse getById(Long id) {
+        return announcementRepository.findById(id).map(AnnouncementResponse::fromEntity).orElseThrow(
                 () -> new RecordNotFoundException("Can't find announcement with id: " + id)
         );
     }
 
     @Override
-    public AnnouncementDTO create(AnnouncementRequestDTO announcementRequestDTO) {
+    public AnnouncementResponse create(AnnouncementRequest announcementRequest) {
 
-        if (announcementRequestDTO == null) {
+        if (announcementRequest == null) {
             throw new IllegalArgumentException("Can't create announcement without author id");
         }
 
-        if (announcementRequestDTO.getContent() == null || announcementRequestDTO.getContent().trim().isEmpty()) {
+        if (announcementRequest.getContent() == null || announcementRequest.getContent().trim().isEmpty()) {
             throw new IllegalArgumentException("Can't create announcement without content");
         }
-        return AnnouncementDTO.fromEntity(
+        return AnnouncementResponse.fromEntity(
                 announcementRepository.save(Announcement.builder()
-                        .content(announcementRequestDTO.getContent())
+                        .content(announcementRequest.getContent())
                         .createdAt(Instant.now())
                         .build())
         );
     }
 
     @Override
-    public AnnouncementDTO update(AnnouncementRequestDTO announcementRequestDTO) {
-        if (announcementRequestDTO == null || announcementRequestDTO.getId() == null) {
+    public AnnouncementResponse update(AnnouncementRequest announcementRequest) {
+        if (announcementRequest == null || announcementRequest.getId() == null) {
             throw new IllegalArgumentException("Can't update this announcement without id");
         }
 
-        if (announcementRequestDTO.getContent() == null || announcementRequestDTO.getContent().trim().isEmpty()) {
+        if (announcementRequest.getContent() == null || announcementRequest.getContent().trim().isEmpty()) {
             throw new IllegalArgumentException("Can't create announcement without content");
         }
 
-        Announcement announcement = announcementRepository.findById(announcementRequestDTO.getId()).orElseThrow(
-                () -> new RecordNotFoundException("Can't find announcement with id: " + announcementRequestDTO.getId())
+        Announcement announcement = announcementRepository.findById(announcementRequest.getId()).orElseThrow(
+                () -> new RecordNotFoundException("Can't find announcement with id: " + announcementRequest.getId())
         );
 
-        announcement.setContent(announcementRequestDTO.getContent());
+        announcement.setContent(announcementRequest.getContent());
 
-        return AnnouncementDTO.fromEntity(
+        return AnnouncementResponse.fromEntity(
                 announcementRepository.save(announcement)
         );
     }

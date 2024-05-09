@@ -1,7 +1,7 @@
 package com.jefy.ibp.services;
 
-import com.jefy.ibp.dtos.AnnouncementDTO;
-import com.jefy.ibp.dtos.AnnouncementRequestDTO;
+import com.jefy.ibp.dtos.AnnouncementResponse;
+import com.jefy.ibp.dtos.AnnouncementRequest;
 import org.springframework.data.domain.Page;
 
 /**
@@ -10,9 +10,9 @@ import org.springframework.data.domain.Page;
  * @Since 05/05/2024
  */
 public interface AnnouncementService {
-    Page<AnnouncementDTO> getAll(int page, int size);
-    AnnouncementDTO getById(Long id);
-    AnnouncementDTO create(AnnouncementRequestDTO announcementRequestDTO);
-    AnnouncementDTO update(AnnouncementRequestDTO announcementRequestDTO);
+    Page<AnnouncementResponse> getAll(int page, int size);
+    AnnouncementResponse getById(Long id);
+    AnnouncementResponse create(AnnouncementRequest announcementRequest);
+    AnnouncementResponse update(AnnouncementRequest announcementRequest);
     void delete(Long id);
 }

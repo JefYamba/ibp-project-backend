@@ -1,6 +1,5 @@
 package com.jefy.ibp.dtos;
 
-import com.jefy.ibp.entities.AppUser;
 import com.jefy.ibp.entities.Message;
 import lombok.*;
 
@@ -16,23 +15,23 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MessageDTO {
+public class MessageResponse {
     private Long id;
     private String content;
     private Instant createdAt;
-    private AppUserDTO sender;
-    private AppUserDTO receiver;
+    private UserResponse sender;
+    private UserResponse receiver;
 
-    public static MessageDTO fromEntity(Message message) {
+    public static MessageResponse fromEntity(Message message) {
         if(message == null || message.getId() == null){
             return null;
         }
 
-        return MessageDTO.builder()
+        return MessageResponse.builder()
                 .id(message.getId())
                 .content(message.getContent())
-                .sender(AppUserDTO.fromEntity(message.getSender()))
-                .receiver(AppUserDTO.fromEntity(message.getReceiver()))
+                .sender(UserResponse.fromEntity(message.getSender()))
+                .receiver(UserResponse.fromEntity(message.getReceiver()))
                 .createdAt(message.getCreatedAt())
                 .build();
     }

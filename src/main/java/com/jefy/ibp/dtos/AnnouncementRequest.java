@@ -12,10 +12,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MessageRequestDTO {
+public class AnnouncementRequest {
     private Long id;
     private String content;
-    private Long senderId;
-    private Long receiverId;
 
 }

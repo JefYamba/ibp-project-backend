@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChangePWRequestDTO {
+public class ChangePasswordRequest {
     private String oldPassword;
     private String newPassword;
     private String confirmPassword;

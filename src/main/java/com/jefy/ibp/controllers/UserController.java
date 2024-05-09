@@ -1,28 +1,23 @@
 package com.jefy.ibp.controllers;
 
-import com.jefy.ibp.dtos.AppUserRequestDTO;
-import com.jefy.ibp.dtos.ChangePWRequestDTO;
-import com.jefy.ibp.dtos.ResponseDTO;
+import com.jefy.ibp.dtos.UserRequest;
+import com.jefy.ibp.dtos.ChangePasswordRequest;
+import com.jefy.ibp.dtos.UserResponse;
 import com.jefy.ibp.enums.Role;
-import com.jefy.ibp.exceptions.EntityNotValidException;
-import com.jefy.ibp.exceptions.OperationNotAuthorizedException;
-import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.services.AppUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 import static com.jefy.ibp.dtos.Constants.USERS_URL;
-import static java.util.Map.of;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 
 /**
  * @Author JefYamba
@@ -45,19 +40,12 @@ public class UserController {
                     @ApiResponse(description = "Success", responseCode = "200")
             }
     )
-    public ResponseEntity<ResponseDTO> getAllUsers(
+    public ResponseEntity<Page<UserResponse>> getAllUsers(
             @RequestParam(value = "q", defaultValue = "") String searchKey,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        return ResponseEntity.status(OK).body(ResponseDTO.builder()
-                .timeStamp(LocalDateTime.now())
-                .status(OK)
-                .statusCode(OK.value())
-                .message("users fetched successfully")
-                .data(of("users", appUserService.getAll(page,size, searchKey)))
-                .build()
-        );
+        return ResponseEntity.status(OK).body(appUserService.getAll(page,size, searchKey));
     }
 
 
@@ -71,37 +59,8 @@ public class UserController {
                     @ApiResponse(description = "Not found", responseCode = "404"),
             }
     )
-    public ResponseEntity<ResponseDTO> get(@PathVariable("user_id") Long userId) {
-
-        try {
-            return ResponseEntity.status(OK).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(OK)
-                    .statusCode(OK.value())
-                    .message("user fetched successfully")
-                    .data(of("user", appUserService.getById(userId)))
-                    .build()
-
-            );
-        } catch (RecordNotFoundException e){
-            return ResponseEntity.status(BAD_REQUEST).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(NOT_FOUND)
-                    .statusCode(NOT_FOUND.value())
-                    .message("user not found")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        } catch (OperationNotAuthorizedException e){
-            return ResponseEntity.status(FORBIDDEN).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(FORBIDDEN)
-                    .statusCode(FORBIDDEN.value())
-                    .message("not authorized operation")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        }
+    public ResponseEntity<UserResponse> get(@PathVariable("user_id") Long userId) {
+        return ResponseEntity.status(OK).body(appUserService.getById(userId));
     }
 
     @PostMapping
@@ -115,38 +74,8 @@ public class UserController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<ResponseDTO> register(@RequestBody AppUserRequestDTO appUserRequestDTO) {
-
-        try {
-            return ResponseEntity.status(OK).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(CREATED)
-                    .statusCode(CREATED.value())
-                    .message("user added successfully")
-                    .data(of("user", appUserService.create(appUserRequestDTO)))
-                    .build()
-
-            );
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(BAD_REQUEST).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .message("Could not create an new user")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        } catch (EntityNotValidException e){
-            return ResponseEntity.status(NOT_ACCEPTABLE).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(NOT_ACCEPTABLE)
-                    .statusCode(NOT_ACCEPTABLE.value())
-                    .message("Could not create an new user, all the required field must be correctly filled")
-                    .errors(of("errors", e.getErrors()))
-                    .build()
-            );
-        }
-
+    public ResponseEntity<UserResponse> register(@RequestBody UserRequest userRequest) {
+            return ResponseEntity.status(OK).body(appUserService.create(userRequest));
     }
 
     @PutMapping
@@ -160,46 +89,8 @@ public class UserController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<ResponseDTO> update(@RequestBody AppUserRequestDTO appUserRequestDTO) {
-
-        try {
-            return ResponseEntity.status(OK).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(OK)
-                    .statusCode(OK.value())
-                    .message("user updated successfully")
-                    .data(of("user", appUserService.update(appUserRequestDTO)))
-                    .build()
-
-            );
-        } catch (IllegalArgumentException | RecordNotFoundException e){
-            return ResponseEntity.status(BAD_REQUEST).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .message("Could not updated user")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        } catch (EntityNotValidException e){
-            return ResponseEntity.status(NOT_ACCEPTABLE).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(NOT_ACCEPTABLE)
-                    .statusCode(NOT_ACCEPTABLE.value())
-                    .message("Could not update an new user, all the required field must be correctly filled")
-                    .errors(of("errors", e.getErrors()))
-                    .build()
-            );
-        } catch (OperationNotAuthorizedException e){
-            return ResponseEntity.status(FORBIDDEN).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(FORBIDDEN)
-                    .statusCode(FORBIDDEN.value())
-                    .message("not authorized operation")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        }
+    public ResponseEntity<UserResponse> update(@RequestBody UserRequest userRequest) {
+            return ResponseEntity.status(OK).body(appUserService.update(userRequest));
     }
 
     @PutMapping("/{user_id}/update_password")
@@ -214,45 +105,10 @@ public class UserController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<ResponseDTO> changePassword(@PathVariable("user_id") Long userId, @RequestBody ChangePWRequestDTO changePWRequestDTO) {
+    public ResponseEntity<String> changePassword(@PathVariable("user_id") Long userId, @RequestBody ChangePasswordRequest changePasswordRequest) {
+        appUserService.changePassWord(userId, changePasswordRequest);
+        return ResponseEntity.status(OK).body("user password updated successfully");
 
-        try {
-            appUserService.changePassWord(userId,changePWRequestDTO);
-            return ResponseEntity.status(OK).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(OK)
-                    .statusCode(OK.value())
-                    .message("user password updated successfully")
-                    .build()
-            );
-        } catch (IllegalArgumentException | RecordNotFoundException e){
-            return ResponseEntity.status(BAD_REQUEST).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .message("Could not update user password")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        } catch (EntityNotValidException e){
-            return ResponseEntity.status(NOT_ACCEPTABLE).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(NOT_ACCEPTABLE)
-                    .statusCode(NOT_ACCEPTABLE.value())
-                    .message("Could not update user password, all the required field must be correctly filled")
-                    .errors(of("errors", e.getErrors()))
-                    .build()
-            );
-        } catch (OperationNotAuthorizedException e){
-            return ResponseEntity.status(FORBIDDEN).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(FORBIDDEN)
-                    .statusCode(FORBIDDEN.value())
-                    .message("not authorized operation")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        }
     }
 
     @PutMapping("/{user_id}/update_role")
@@ -266,26 +122,9 @@ public class UserController {
                     @ApiResponse(description = "Bad request/ Invalid parameter", responseCode = "400"),
             }
     )
-    public ResponseEntity<ResponseDTO> changeRole(@PathVariable("user_id") Long userId, @RequestBody Role role) {
-        try {
-            appUserService.changeRole(userId, role);
-            return ResponseEntity.status(OK).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(OK)
-                    .statusCode(OK.value())
-                    .message("user role updated successfully")
-                    .build()
-            );
-        } catch (IllegalArgumentException | RecordNotFoundException e){
-            return ResponseEntity.status(BAD_REQUEST).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .message("Could not update user role")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        }
+    public ResponseEntity<String> changeRole(@PathVariable("user_id") Long userId, @RequestBody Role role) {
+        appUserService.changeRole(userId, role);
+        return ResponseEntity.status(OK).body("user role updated successfully");
     }
 
     @DeleteMapping("/{user_id}")
@@ -299,37 +138,9 @@ public class UserController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500"),
             }
     )
-    public ResponseEntity<ResponseDTO> delete(@PathVariable("user_id") Long userId) {
-
-        try {
-            appUserService.delete(userId);
-            return ResponseEntity.status(OK).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(OK)
-                    .statusCode(OK.value())
-                    .message("user deleted successfully")
-                    .build()
-
-            );
-        }catch (RecordNotFoundException e){
-            return ResponseEntity.status(BAD_REQUEST).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .message("user does not exist")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        } catch (IOException e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(INTERNAL_SERVER_ERROR)
-                    .statusCode(INTERNAL_SERVER_ERROR.value())
-                    .message("Could not delete the user, problem occurred on deleting the image")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        }
+    public ResponseEntity<String> delete(@PathVariable("user_id") Long userId) throws IOException {
+        appUserService.delete(userId);
+        return ResponseEntity.status(OK).body("user deleted successfully");
     }
 
     @PostMapping("/{user_id}")
@@ -343,44 +154,9 @@ public class UserController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500"),
             }
     )
-    public ResponseEntity<ResponseDTO> setImageProfile(@PathVariable("user_id") Long userId, @RequestPart MultipartFile image) {
-        try {
-            appUserService.setImage(userId, image);
-            return ResponseEntity.status(OK).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(OK)
-                    .statusCode(OK.value())
-                    .message("user image profile saved successfully")
-                    .build()
-            );
-        } catch (IllegalArgumentException | RecordNotFoundException e){
-            return ResponseEntity.status(BAD_REQUEST).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .message("Could not save user image profile")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        } catch (IOException e){
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(INTERNAL_SERVER_ERROR)
-                    .statusCode(INTERNAL_SERVER_ERROR.value())
-                    .message("Could not user image profile")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        }  catch (OperationNotAuthorizedException e){
-            return ResponseEntity.status(FORBIDDEN).body(ResponseDTO.builder()
-                    .timeStamp(LocalDateTime.now())
-                    .status(FORBIDDEN)
-                    .statusCode(FORBIDDEN.value())
-                    .message("not authorized operation")
-                    .errors(of("errors", e.getMessage()))
-                    .build()
-            );
-        }
+    public ResponseEntity<String> setImageProfile(@PathVariable("user_id") Long userId, @RequestPart MultipartFile image) throws IOException {
+        appUserService.setImage(userId, image);
+        return ResponseEntity.status(OK).body("user image profile saved successfully");
     }
 
 

@@ -20,7 +20,7 @@ import static com.jefy.ibp.utils.ImageUtility.getUrl;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AppUserDTO {
+public class UserResponse {
     private Long id;
     private String firstName;
     private String lastName;
@@ -32,11 +32,11 @@ public class AppUserDTO {
     private String email;
     private Role role;
 
-    public static AppUserDTO fromEntity(AppUser appUser) {
+    public static UserResponse fromEntity(AppUser appUser) {
         if (appUser == null || appUser.getId() == null) {
             return null;
         }
-        return AppUserDTO.builder()
+        return UserResponse.builder()
                 .id(appUser.getId())
                 .firstName(appUser.getFirstName())
                 .lastName(appUser.getLastName())

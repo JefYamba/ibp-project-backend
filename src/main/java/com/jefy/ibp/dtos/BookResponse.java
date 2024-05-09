@@ -18,7 +18,7 @@ import static com.jefy.ibp.utils.ImageUtility.getUrl;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BookDTO {
+public class BookResponse {
     private Long id;
     private String title;
     private String author;
@@ -29,11 +29,11 @@ public class BookDTO {
     private String summary;
     private String image;
 
-    public static BookDTO fromEntity(Book book) {
+    public static BookResponse fromEntity(Book book) {
         if (book == null || book.getId() == null ) {
             return null;
         }
-        return BookDTO.builder()
+        return BookResponse.builder()
                 .id(book.getId())
                 .title(book.getTitle())
                 .author(book.getAuthor())
