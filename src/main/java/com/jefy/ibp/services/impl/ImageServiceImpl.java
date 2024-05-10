@@ -3,13 +3,10 @@ package com.jefy.ibp.services.impl;
 import com.jefy.ibp.entities.AppUser;
 import com.jefy.ibp.entities.Book;
 import com.jefy.ibp.enums.ClassEntity;
-import com.jefy.ibp.enums.Role;
-import com.jefy.ibp.exceptions.OperationNotAuthorizedException;
 import com.jefy.ibp.repositories.AppUserRepository;
 import com.jefy.ibp.repositories.BookRepository;
 import com.jefy.ibp.services.ImageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Objects;
 
 import static com.jefy.ibp.enums.ClassEntity.APP_USER;
 import static com.jefy.ibp.utils.ImageUtility.getImageExtension;
@@ -36,15 +32,15 @@ public class ImageServiceImpl implements ImageService {
     private final BookRepository bookRepository;
 
     @Override
-    public byte[] getImage(ClassEntity entity, Long imageOwnerId) throws IOException {
-
-        AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        if (!Objects.equals(loggedUser.getId(), imageOwnerId) && loggedUser.getRole() != Role.ADMIN )
-            throw new OperationNotAuthorizedException("this operation is not allowed");
+    public byte[] getImage(ClassEntity entity, Long imageOwnerId) throws IOException{
 
         String imageName = switch (entity){
-            case APP_USER -> appUserRepository.findById(imageOwnerId).map(AppUser::getImage).orElseThrow(() -> new IllegalArgumentException("the is no user with id"));
-            case BOOK -> bookRepository.findById(imageOwnerId).map(Book::getImage).orElseThrow(() -> new IllegalArgumentException("the is no book with id"));
+            case APP_USER -> appUserRepository.findById(imageOwnerId).map(AppUser::getImage).orElseThrow(
+                    () -> new IllegalArgumentException("The is no user with this id " + imageOwnerId)
+            );
+            case BOOK -> bookRepository.findById(imageOwnerId).map(Book::getImage).orElseThrow(
+                    () -> new IllegalArgumentException("The is no book with id " + imageOwnerId)
+            );
         };
 
         if (imageName == null || imageName.isBlank() || imageName.isEmpty()){
