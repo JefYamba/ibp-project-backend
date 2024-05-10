@@ -4,15 +4,15 @@ import com.jefy.ibp.dtos.*;
 import com.jefy.ibp.entities.AppUser;
 import com.jefy.ibp.enums.Role;
 import com.jefy.ibp.exceptions.EntityNotValidException;
-import com.jefy.ibp.exceptions.OperationNotAuthorizedException;
-import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.repositories.AppUserRepository;
 import com.jefy.ibp.services.AppUserService;
 import com.jefy.ibp.validators.PasswordValidator;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,10 +56,10 @@ public class AppUserServiceImpl implements AppUserService {
     public UserResponse getById(Long id) {
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!Objects.equals(loggedUser.getId(), id) && loggedUser.getRole() != Role.ADMIN )
-            throw new OperationNotAuthorizedException("this operation is not allowed");
+            throw new AccessDeniedException("this operation is not allowed");
 
         return appUserRepository.findById(id).map(UserResponse::fromEntity).orElseThrow(
-                () -> new RecordNotFoundException("user does not exist")
+                () -> new EntityNotFoundException("user does not exist")
         );
     }
 
@@ -92,14 +92,14 @@ public class AppUserServiceImpl implements AppUserService {
 
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!Objects.equals(loggedUser.getId(), userRequest.getId()) && loggedUser.getRole() != Role.ADMIN )
-            throw new OperationNotAuthorizedException("this operation is not allowed");
+            throw new AccessDeniedException("this operation is not allowed");
 
         if (userRequest.getId() == null)
             throw new IllegalArgumentException("id cannot be null");
 
 
         AppUser appUser = appUserRepository.findById(userRequest.getId())
-                .orElseThrow(() -> new RecordNotFoundException("user does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("user does not exist"));
 
         appUser.setFirstName(userRequest.getFirstName());
         appUser.setLastName(userRequest.getLastName());
@@ -120,7 +120,7 @@ public class AppUserServiceImpl implements AppUserService {
             throw new IllegalArgumentException("User Id and role cannot be null");
         }
         AppUser appUser = appUserRepository.findById(userId).orElseThrow(
-                () -> new RecordNotFoundException("user does not exist")
+                () -> new EntityNotFoundException("user does not exist")
         );
         appUser.setRole(role);
         appUserRepository.save(appUser);
@@ -129,7 +129,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public void delete(Long id) throws IOException {
         AppUser appUser = appUserRepository.findById(id).orElseThrow(
-                () -> new RecordNotFoundException("user does not exist")
+                () -> new EntityNotFoundException("user does not exist")
         );
         if (!(appUser.getImage() == null || appUser.getImage().isBlank())){
             deleteImageFileFromDirectory(APP_USER, appUser.getImage());
@@ -142,14 +142,14 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
         if (!Objects.equals(loggedUser.getId(), userId))
-            throw new OperationNotAuthorizedException("this operation is not allowed");
+            throw new AccessDeniedException("this operation is not allowed");
 
         if (changePasswordRequest == null) {
             throw new IllegalArgumentException("User Id and email cannot be null");
         }
 
         if (!appUserRepository.existsById(userId)) {
-            throw new RecordNotFoundException("user does not exist");
+            throw new EntityNotFoundException("user does not exist");
         }
 
         Set<String> errors = passwordValidator.validatePassword(changePasswordRequest, loggedUser);
@@ -157,7 +157,7 @@ public class AppUserServiceImpl implements AppUserService {
             throw new EntityNotValidException(errors);
         }
         AppUser appUser = appUserRepository.findById(userId).orElseThrow(
-                () -> new RecordNotFoundException("user does not exist")
+                () -> new EntityNotFoundException("user does not exist")
         );
         appUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         appUserRepository.save(appUser);
@@ -168,7 +168,7 @@ public class AppUserServiceImpl implements AppUserService {
 
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!Objects.equals(loggedUser.getId(), userId) && loggedUser.getRole() != Role.ADMIN )
-            throw new OperationNotAuthorizedException("this operation is not allowed");
+            throw new AccessDeniedException("this operation is not allowed");
 
 
         if (image == null || userId == null || image.isEmpty() ){
@@ -176,7 +176,7 @@ public class AppUserServiceImpl implements AppUserService {
         }
 
         AppUser user = appUserRepository.findById(userId).orElseThrow(
-                () -> new RecordNotFoundException("user does not exist")
+                () -> new EntityNotFoundException("user does not exist")
         );
 
         if (!(user.getImage() == null || user.getImage().isBlank())){

@@ -3,9 +3,9 @@ package com.jefy.ibp.services.impl;
 import com.jefy.ibp.dtos.BookResponse;
 import com.jefy.ibp.dtos.BookRequest;
 import com.jefy.ibp.entities.Book;
-import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.repositories.BookRepository;
 import com.jefy.ibp.services.BookService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -53,7 +53,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse getById(Long id) {
         return bookRepository.findById(id).map(BookResponse::fromEntity).orElseThrow(
-                () -> new RecordNotFoundException("book does not exist")
+                () -> new EntityNotFoundException("book does not exist")
         );
     }
 
@@ -74,7 +74,7 @@ public class BookServiceImpl implements BookService {
             throw new IllegalArgumentException("Book or id cannot be null");
 
         Book book = bookRepository.findById(bookRequest.getId())
-                .orElseThrow(() -> new RecordNotFoundException("Book does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Book does not exist"));
 
         book.setTitle(bookRequest.getTitle());
         book.setAuthor(bookRequest.getAuthor());
@@ -90,7 +90,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void delete(Long id) throws IOException {
         Book book = bookRepository.findById(id).orElseThrow(
-                () -> new RecordNotFoundException("Book does not exist")
+                () -> new EntityNotFoundException("Book does not exist")
         );
         if (!(book.getImage() == null || book.getImage().isBlank())){
             deleteImageFileFromDirectory(BOOK, book.getImage());
@@ -105,7 +105,7 @@ public class BookServiceImpl implements BookService {
         }
 
         Book book = bookRepository.findById(bookId).orElseThrow(
-                () -> new RecordNotFoundException("user does not exist")
+                () -> new EntityNotFoundException("user does not exist")
         );
 
         if (!(book.getImage() == null || book.getImage().isBlank())){

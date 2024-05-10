@@ -6,6 +6,7 @@ import com.jefy.ibp.dtos.AuthentificationRequest;
 import com.jefy.ibp.services.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(Constants.AUTHENTIFICATION_URL)
+@Tag(name = "Authentification")
 public class AuthentificationController {
 
     private final AuthenticationService authenticationService;

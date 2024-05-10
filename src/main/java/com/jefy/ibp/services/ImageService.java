@@ -11,5 +11,5 @@ import java.io.IOException;
  */
 public interface ImageService {
 
-    byte[] getImage(ClassEntity entity, Long imageOwnerId) throws IOException;
+    byte[] getImage(ClassEntity entity, String imageName) throws IOException;
 }

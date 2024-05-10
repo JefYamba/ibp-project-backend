@@ -5,6 +5,7 @@ import com.jefy.ibp.dtos.BookResponse;
 import com.jefy.ibp.services.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @RequestMapping(BOOKS_URL)
 @RequiredArgsConstructor
+@Tag(name = "Book")
 public class BookController {
     private final BookService bookService;
 

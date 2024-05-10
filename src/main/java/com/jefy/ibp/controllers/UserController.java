@@ -7,6 +7,7 @@ import com.jefy.ibp.enums.Role;
 import com.jefy.ibp.services.AppUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @RequestMapping(USERS_URL)
 @RequiredArgsConstructor
+@Tag(name = "User")
 public class UserController {
     private final AppUserService appUserService;
 

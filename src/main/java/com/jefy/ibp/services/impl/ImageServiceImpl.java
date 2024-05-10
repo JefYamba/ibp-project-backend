@@ -1,12 +1,14 @@
 package com.jefy.ibp.services.impl;
 
 import com.jefy.ibp.entities.AppUser;
-import com.jefy.ibp.entities.Book;
 import com.jefy.ibp.enums.ClassEntity;
+import com.jefy.ibp.enums.Role;
 import com.jefy.ibp.repositories.AppUserRepository;
 import com.jefy.ibp.repositories.BookRepository;
 import com.jefy.ibp.services.ImageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 import static com.jefy.ibp.enums.ClassEntity.APP_USER;
 import static com.jefy.ibp.utils.ImageUtility.getImageExtension;
@@ -32,22 +35,29 @@ public class ImageServiceImpl implements ImageService {
     private final BookRepository bookRepository;
 
     @Override
-    public byte[] getImage(ClassEntity entity, Long imageOwnerId) throws IOException{
-
-        String imageName = switch (entity){
-            case APP_USER -> appUserRepository.findById(imageOwnerId).map(AppUser::getImage).orElseThrow(
-                    () -> new IllegalArgumentException("The is no user with this id " + imageOwnerId)
-            );
-            case BOOK -> bookRepository.findById(imageOwnerId).map(Book::getImage).orElseThrow(
-                    () -> new IllegalArgumentException("The is no book with id " + imageOwnerId)
-            );
-        };
-
+    public byte[] getImage(ClassEntity entity, String imageName) throws IOException{
         if (imageName == null || imageName.isBlank() || imageName.isEmpty()){
-            throw new IllegalArgumentException("there is no image for this " + (entity == APP_USER ? "user":"book"));
+            throw new IllegalArgumentException("the image name is null or empty");
         }
 
-        return Files.readAllBytes(getImagePath(entity, imageName));
+        if (entity ==APP_USER){
+            if (appUserRepository.existsByImage(imageName)){
+                AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+                if (!Objects.equals(loggedUser.getId(), appUserRepository.findByImage(imageName).getId()) && loggedUser.getRole() != Role.ADMIN ){
+                    throw new AccessDeniedException("Operation not authorized");
+                }
+
+                return Files.readAllBytes(getImagePath(entity, imageName));
+            } else {
+                throw new IllegalArgumentException("The is no user with this image " + imageName);
+            }
+        } else {
+            if (bookRepository.existsByImage(imageName)){
+                return Files.readAllBytes(getImagePath(entity, imageName));
+            } else {
+                throw new IllegalArgumentException("The is no book with this image " + imageName);
+            }
+        }
     }
 
     public static  String saveImageInDirectory(ClassEntity entity, Long id, MultipartFile image) throws IOException {

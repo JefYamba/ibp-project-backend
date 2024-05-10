@@ -3,9 +3,9 @@ package com.jefy.ibp.services.impl;
 import com.jefy.ibp.dtos.AnnouncementResponse;
 import com.jefy.ibp.dtos.AnnouncementRequest;
 import com.jefy.ibp.entities.Announcement;
-import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.repositories.AnnouncementRepository;
 import com.jefy.ibp.services.AnnouncementService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +35,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     @Override
     public AnnouncementResponse getById(Long id) {
         return announcementRepository.findById(id).map(AnnouncementResponse::fromEntity).orElseThrow(
-                () -> new RecordNotFoundException("Can't find announcement with id: " + id)
+                () -> new EntityNotFoundException("Can't find announcement with id: " + id)
         );
     }
 
@@ -62,7 +62,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
 
         Announcement announcement = announcementRepository.findById(announcementRequest.getId()).orElseThrow(
-                () -> new RecordNotFoundException("Can't find announcement with id: " + announcementRequest.getId())
+                () -> new EntityNotFoundException("Can't find announcement with id: " + announcementRequest.getId())
         );
 
         announcement.setContent(announcementRequest.getContent());

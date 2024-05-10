@@ -5,15 +5,15 @@ import com.jefy.ibp.dtos.MessageRequest;
 import com.jefy.ibp.entities.AppUser;
 import com.jefy.ibp.entities.Message;
 import com.jefy.ibp.enums.Role;
-import com.jefy.ibp.exceptions.OperationNotAuthorizedException;
-import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.repositories.AppUserRepository;
 import com.jefy.ibp.repositories.MessageRepository;
 import com.jefy.ibp.services.MessageService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +44,7 @@ public class MessageServiceImpl implements MessageService {
 
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!Objects.equals(loggedUser.getId(), senderId) && loggedUser.getRole() != Role.ADMIN )
-            throw new OperationNotAuthorizedException("this operation is not allowed");
+            throw new AccessDeniedException("this operation is not allowed");
 
         if (senderId != null && appUserRepository.existsById(senderId)) {
             return messageRepository.findBySenderId(senderId, PageRequest.of(page,size, Sort.by(Sort.Direction.DESC,"createdAt")))
@@ -58,7 +58,7 @@ public class MessageServiceImpl implements MessageService {
 
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!Objects.equals(loggedUser.getId(), receiverId) && loggedUser.getRole() != Role.ADMIN )
-            throw new OperationNotAuthorizedException("this operation is not allowed");
+            throw new AccessDeniedException("this operation is not allowed");
 
 
         if (receiverId != null && appUserRepository.existsById(receiverId)) {
@@ -77,7 +77,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public MessageResponse getById(Long id) {
         Message message = messageRepository.findById(id).orElseThrow(
-                () -> new RecordNotFoundException("Can't find message with id: " + id)
+                () -> new EntityNotFoundException("Can't find message with id: " + id)
         );
 
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -86,7 +86,7 @@ public class MessageServiceImpl implements MessageService {
                 !Objects.equals(loggedUser.getId(), message.getReceiver().getId()) &&
                 loggedUser.getRole() != Role.ADMIN
         ) {
-            throw new OperationNotAuthorizedException("this operation is not allowed");
+            throw new AccessDeniedException("this operation is not allowed");
         }
 
         return MessageResponse.fromEntity(message);
@@ -100,12 +100,12 @@ public class MessageServiceImpl implements MessageService {
 
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!Objects.equals(loggedUser.getId(), messageRequest.getSenderId())) {
-            throw new OperationNotAuthorizedException("this operation is not allowed");
+            throw new AccessDeniedException("this operation is not allowed");
         }
 
 
         AppUser sender = appUserRepository.findById(messageRequest.getSenderId()).orElseThrow(
-                () -> new RecordNotFoundException("Can't find sender with id: " + messageRequest.getSenderId())
+                () -> new EntityNotFoundException("Can't find sender with id: " + messageRequest.getSenderId())
         );
 
         AppUser receiver = appUserRepository.findById(messageRequest.getReceiverId()).orElse(null);
@@ -129,11 +129,11 @@ public class MessageServiceImpl implements MessageService {
 
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!Objects.equals(loggedUser.getId(), messageRequest.getSenderId())) {
-            throw new OperationNotAuthorizedException("this operation is not allowed");
+            throw new AccessDeniedException("this operation is not allowed");
         }
 
         Message message = messageRepository.findById(messageRequest.getId()).orElseThrow(
-                () -> new RecordNotFoundException("Can't find announcement with id: " + messageRequest.getId())
+                () -> new EntityNotFoundException("Can't find announcement with id: " + messageRequest.getId())
         );
 
         message.setContent(messageRequest.getContent());

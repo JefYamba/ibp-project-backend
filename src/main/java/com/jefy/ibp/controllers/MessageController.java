@@ -5,6 +5,7 @@ import com.jefy.ibp.dtos.MessageResponse;
 import com.jefy.ibp.services.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @RequestMapping(MESSAGES_URL)
 @RequiredArgsConstructor
+@Tag(name = "Message")
 public class MessageController {
     private final MessageService messageService;
 

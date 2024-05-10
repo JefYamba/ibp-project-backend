@@ -1,6 +1,8 @@
 package com.jefy.ibp.exceptions;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,8 +21,8 @@ import static org.springframework.http.HttpStatus.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(OperationNotAuthorizedException.class)
-    public ResponseEntity<ExceptionResponse> handleOperationNotAuthorizedException(OperationNotAuthorizedException exception){
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleAccessDeniedException (AccessDeniedException  exception){
         return ResponseEntity.status(FORBIDDEN).body(
                 ExceptionResponse.builder()
                         .timeStamp(LocalDateTime.now())
@@ -41,9 +43,9 @@ public class GlobalExceptionHandler {
                         .build()
         );
     }
-
-    @ExceptionHandler(RecordNotFoundException.class)
-    public ResponseEntity<ExceptionResponse> handleRecordNotFoundException(RecordNotFoundException exception){
+    
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleEntityNotFoundException(EntityNotFoundException exception){
         return ResponseEntity.status(NOT_FOUND).body(
                 ExceptionResponse.builder()
                         .timeStamp(LocalDateTime.now())

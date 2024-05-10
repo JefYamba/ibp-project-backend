@@ -16,4 +16,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Page<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrPublisherContainingIgnoreCaseOrIsbnContainingIgnoreCaseOrGenreContainingIgnoreCaseOrSummaryContainingIgnoreCase(
             String titleKey, String authorKey, String publisherKey, String isbnKey, String genreKey, String summaryKey, PageRequest pageRequest
     );
+
+    boolean existsByImage(String imageName);
 }
