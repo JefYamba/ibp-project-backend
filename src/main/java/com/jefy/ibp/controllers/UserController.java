@@ -7,6 +7,7 @@ import com.jefy.ibp.enums.Role;
 import com.jefy.ibp.services.AppUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +75,7 @@ public class UserController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<UserResponse> register(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponse> register(@RequestBody @Valid UserRequest userRequest) {
             return ResponseEntity.status(OK).body(appUserService.create(userRequest));
     }
 
@@ -89,7 +90,7 @@ public class UserController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<UserResponse> update(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponse> update(@RequestBody @Valid UserRequest userRequest) {
             return ResponseEntity.status(OK).body(appUserService.update(userRequest));
     }
 
@@ -105,7 +106,7 @@ public class UserController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<String> changePassword(@PathVariable("user_id") Long userId, @RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<String> changePassword(@PathVariable("user_id") Long userId, @RequestBody @Valid ChangePasswordRequest changePasswordRequest) {
         appUserService.changePassWord(userId, changePasswordRequest);
         return ResponseEntity.status(OK).body("user password updated successfully");
 

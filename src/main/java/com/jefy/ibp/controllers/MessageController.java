@@ -5,6 +5,7 @@ import com.jefy.ibp.dtos.MessageResponse;
 import com.jefy.ibp.services.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -120,7 +121,7 @@ public class MessageController {
                     @ApiResponse(description = "Not authorized", responseCode = "403"),
             }
     )
-    public ResponseEntity<MessageResponse> register(@RequestBody MessageRequest messageRequest) {
+    public ResponseEntity<MessageResponse> register(@RequestBody @Valid MessageRequest messageRequest) {
         return ResponseEntity.status(OK).body(messageService.create(messageRequest));
     }
 
@@ -134,7 +135,7 @@ public class MessageController {
                     @ApiResponse(description = "Not authorized", responseCode = "403"),
             }
     )
-    public ResponseEntity<MessageResponse> update(@RequestBody MessageRequest messageRequest) {
+    public ResponseEntity<MessageResponse> update(@RequestBody @Valid MessageRequest messageRequest) {
         return ResponseEntity.status(OK).body(messageService.update(messageRequest));
     }
 

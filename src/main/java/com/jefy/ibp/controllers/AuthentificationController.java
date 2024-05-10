@@ -6,6 +6,7 @@ import com.jefy.ibp.dtos.AuthentificationRequest;
 import com.jefy.ibp.services.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +38,7 @@ public class AuthentificationController {
                     @ApiResponse(description = "Unauthorized / Can't authenticate", responseCode = "401"),
             }
     )
-    public ResponseEntity<AuthentificationResponse> login(@RequestBody AuthentificationRequest body){
+    public ResponseEntity<AuthentificationResponse> login(@RequestBody @Valid AuthentificationRequest body){
         return ResponseEntity.status(OK).body(authenticationService.authenticate(body.getUsername(), body.getPassword()));
     }
 }

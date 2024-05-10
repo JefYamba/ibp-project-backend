@@ -3,11 +3,9 @@ package com.jefy.ibp.services.impl;
 import com.jefy.ibp.dtos.BookResponse;
 import com.jefy.ibp.dtos.BookRequest;
 import com.jefy.ibp.entities.Book;
-import com.jefy.ibp.exceptions.EntityNotValidException;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.repositories.BookRepository;
 import com.jefy.ibp.services.BookService;
-import com.jefy.ibp.validators.BookValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static com.jefy.ibp.enums.ClassEntity.BOOK;
 import static com.jefy.ibp.services.impl.ImageServiceImpl.deleteImageFileFromDirectory;
@@ -65,11 +62,6 @@ public class BookServiceImpl implements BookService {
         if (bookRequest == null)
             throw new IllegalArgumentException("book cannot be null");
 
-        Map<String, String> errors = BookValidator.validateBook(bookRequest);
-
-        if (!errors.isEmpty()){
-            throw new EntityNotValidException(errors);
-        }
 
         return BookResponse.fromEntity(bookRepository.save(
                 BookRequest.toEntity(bookRequest)
@@ -80,11 +72,6 @@ public class BookServiceImpl implements BookService {
     public BookResponse update(BookRequest bookRequest){
         if (bookRequest == null || bookRequest.getId() == null)
             throw new IllegalArgumentException("Book or id cannot be null");
-
-        Map<String, String> errorsUser = BookValidator.validateBook(bookRequest);
-        if (!errorsUser.isEmpty()){
-            throw new EntityNotValidException(errorsUser);
-        }
 
         Book book = bookRepository.findById(bookRequest.getId())
                 .orElseThrow(() -> new RecordNotFoundException("Book does not exist"));

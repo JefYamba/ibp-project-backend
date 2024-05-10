@@ -1,5 +1,6 @@
 package com.jefy.ibp.dtos;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 /**
@@ -14,6 +15,7 @@ import lombok.*;
 @Builder
 public class AnnouncementRequest {
     private Long id;
+    @NotBlank(message = "Message content must be filled in")
     private String content;
 
 }

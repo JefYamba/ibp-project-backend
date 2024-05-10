@@ -1,11 +1,13 @@
 package com.jefy.ibp.exceptions;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -60,6 +62,23 @@ public class GlobalExceptionHandler {
                         .status(BAD_REQUEST)
                         .statusCode(BAD_REQUEST.value())
                         .error(exception.getMessage())
+                        .build()
+        );
+    }
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ExceptionResponse> handleEntityNotValidException(MethodArgumentNotValidException exception){
+        Set<String> errors = new HashSet<>();
+        exception.getBindingResult().getAllErrors().forEach(error -> errors.add(error.getDefaultMessage()));
+        
+        return ResponseEntity.status(BAD_REQUEST).body(
+                ExceptionResponse.builder()
+                        .timeStamp(LocalDateTime.now())
+                        .status(BAD_REQUEST)
+                        .statusCode(BAD_REQUEST.value())
+                        .error("form is not valid")
+                        .formErrors(errors)
                         .build()
         );
     }

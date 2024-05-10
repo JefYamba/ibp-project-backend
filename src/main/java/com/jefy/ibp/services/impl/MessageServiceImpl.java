@@ -103,9 +103,6 @@ public class MessageServiceImpl implements MessageService {
             throw new OperationNotAuthorizedException("this operation is not allowed");
         }
 
-        if (messageRequest.getContent() == null || messageRequest.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("Can't create message without content");
-        }
 
         AppUser sender = appUserRepository.findById(messageRequest.getSenderId()).orElseThrow(
                 () -> new RecordNotFoundException("Can't find sender with id: " + messageRequest.getSenderId())
@@ -133,10 +130,6 @@ public class MessageServiceImpl implements MessageService {
         AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!Objects.equals(loggedUser.getId(), messageRequest.getSenderId())) {
             throw new OperationNotAuthorizedException("this operation is not allowed");
-        }
-
-        if (messageRequest.getContent() == null || messageRequest.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("Can't create announcement without content");
         }
 
         Message message = messageRepository.findById(messageRequest.getId()).orElseThrow(

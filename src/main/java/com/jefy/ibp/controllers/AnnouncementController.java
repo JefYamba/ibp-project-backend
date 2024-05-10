@@ -5,6 +5,7 @@ import com.jefy.ibp.dtos.AnnouncementResponse;
 import com.jefy.ibp.services.AnnouncementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class AnnouncementController {
                     @ApiResponse(description = "Bad request/ Invalid parameter", responseCode = "400"),
             }
     )
-    public ResponseEntity<AnnouncementResponse> register(@RequestBody AnnouncementRequest announcementRequest) {
+    public ResponseEntity<AnnouncementResponse> register(@RequestBody @Valid AnnouncementRequest announcementRequest) {
         return ResponseEntity.status(OK).body(announcementService.create(announcementRequest));
     }
 
@@ -76,7 +77,7 @@ public class AnnouncementController {
                     @ApiResponse(description = "Bad request/ Invalid parameter", responseCode = "400"),
             }
     )
-    public ResponseEntity<AnnouncementResponse> update(@RequestBody AnnouncementRequest announcementRequest) {
+    public ResponseEntity<AnnouncementResponse> update(@RequestBody @Valid AnnouncementRequest announcementRequest) {
         return ResponseEntity.status(OK).body(announcementService.update(announcementRequest));
     }
 

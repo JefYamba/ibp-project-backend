@@ -5,7 +5,8 @@ import lombok.*;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.Set;
+
 
 /**
  * @Author JefYamba
@@ -23,5 +24,5 @@ public class ExceptionResponse {
     private Integer statusCode;
     private HttpStatus status;
     private String error;
-    private Map<?, ?> formErrors;
+    private Set<String> formErrors;
 }

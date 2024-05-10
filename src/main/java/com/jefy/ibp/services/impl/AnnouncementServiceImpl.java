@@ -46,9 +46,6 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             throw new IllegalArgumentException("Can't create announcement without author id");
         }
 
-        if (announcementRequest.getContent() == null || announcementRequest.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("Can't create announcement without content");
-        }
         return AnnouncementResponse.fromEntity(
                 announcementRepository.save(Announcement.builder()
                         .content(announcementRequest.getContent())
@@ -63,9 +60,6 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             throw new IllegalArgumentException("Can't update this announcement without id");
         }
 
-        if (announcementRequest.getContent() == null || announcementRequest.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("Can't create announcement without content");
-        }
 
         Announcement announcement = announcementRepository.findById(announcementRequest.getId()).orElseThrow(
                 () -> new RecordNotFoundException("Can't find announcement with id: " + announcementRequest.getId())

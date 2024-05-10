@@ -8,7 +8,6 @@ import com.jefy.ibp.exceptions.OperationNotAuthorizedException;
 import com.jefy.ibp.exceptions.RecordNotFoundException;
 import com.jefy.ibp.repositories.AppUserRepository;
 import com.jefy.ibp.services.AppUserService;
-import com.jefy.ibp.validators.AppUserValidator;
 import com.jefy.ibp.validators.PasswordValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.jefy.ibp.dtos.Constants.DEFAULT_PASSWORD;
 import static com.jefy.ibp.enums.ClassEntity.APP_USER;
@@ -69,11 +68,6 @@ public class AppUserServiceImpl implements AppUserService {
         if (userRequest == null)
             throw new IllegalArgumentException("UserResponse cannot be null");
 
-        Map<String, String> errors = AppUserValidator.validateUser(userRequest);
-
-        if (!errors.isEmpty()){
-            throw new EntityNotValidException(errors);
-        }
         String encodedPassword = passwordEncoder.encode(DEFAULT_PASSWORD);
         AppUser appUser = AppUser.builder()
                 .firstName(userRequest.getFirstName())
@@ -103,10 +97,6 @@ public class AppUserServiceImpl implements AppUserService {
         if (userRequest.getId() == null)
             throw new IllegalArgumentException("id cannot be null");
 
-        Map<String, String> errorsUser = AppUserValidator.validateUser(userRequest);
-        if (!errorsUser.isEmpty()){
-            throw new EntityNotValidException(errorsUser);
-        }
 
         AppUser appUser = appUserRepository.findById(userRequest.getId())
                 .orElseThrow(() -> new RecordNotFoundException("user does not exist"));
@@ -162,7 +152,7 @@ public class AppUserServiceImpl implements AppUserService {
             throw new RecordNotFoundException("user does not exist");
         }
 
-        Map<String, String> errors = passwordValidator.validatePassword(changePasswordRequest, appUserRepository.findById(userId).orElse(null));
+        Set<String> errors = passwordValidator.validatePassword(changePasswordRequest, loggedUser);
         if (!errors.isEmpty()){
             throw new EntityNotValidException(errors);
         }

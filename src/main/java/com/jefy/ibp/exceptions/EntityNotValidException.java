@@ -2,7 +2,7 @@ package com.jefy.ibp.exceptions;
 
 import lombok.Getter;
 
-import java.util.Map;
+import java.util.Set;
 
 /**
  * @Author JefYamba
@@ -11,8 +11,8 @@ import java.util.Map;
  */
 @Getter
 public class EntityNotValidException extends RuntimeException {
-    private final Map<String, String> errors;
-    public EntityNotValidException(Map<String, String> errors) {
+    private final Set<String> errors;
+    public EntityNotValidException(Set<String> errors) {
         super("Entity not valid");
         this.errors = errors;
     }

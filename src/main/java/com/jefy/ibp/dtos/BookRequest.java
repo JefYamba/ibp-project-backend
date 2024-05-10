@@ -1,6 +1,7 @@
 package com.jefy.ibp.dtos;
 
 import com.jefy.ibp.entities.Book;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -17,11 +18,14 @@ import java.time.LocalDate;
 @Builder
 public class BookRequest {
     private Long id;
+    @NotBlank(message = "Title must be filled in")
     private String title;
+    @NotBlank(message = "Author must be filled in")
     private String author;
     private String publisher;
     private LocalDate publicationDate;
     private String isbn;
+    @NotBlank(message = "Genre must be filled in")
     private String genre;
     private String summary;
 

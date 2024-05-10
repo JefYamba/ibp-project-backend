@@ -5,6 +5,7 @@ import com.jefy.ibp.dtos.BookResponse;
 import com.jefy.ibp.services.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -83,7 +84,7 @@ public class BookController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<BookResponse> register(@RequestBody BookRequest bookRequest) {
+    public ResponseEntity<BookResponse> register(@RequestBody @Valid BookRequest bookRequest) {
         return ResponseEntity.status(OK).body(bookService.create(bookRequest));
     }
 
@@ -99,7 +100,7 @@ public class BookController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<BookResponse> update(@RequestBody BookRequest bookRequest) {
+    public ResponseEntity<BookResponse> update(@RequestBody @Valid BookRequest bookRequest) {
         return ResponseEntity.status(OK).body(bookService.update(bookRequest));
     }
 
