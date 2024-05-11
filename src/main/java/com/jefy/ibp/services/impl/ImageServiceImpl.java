@@ -42,10 +42,6 @@ public class ImageServiceImpl implements ImageService {
 
         if (entity ==APP_USER){
             if (appUserRepository.existsByImage(imageName)){
-                AppUser loggedUser = appUserRepository.getAppUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-                if (!Objects.equals(loggedUser.getId(), appUserRepository.findByImage(imageName).getId()) && loggedUser.getRole() != Role.ADMIN ){
-                    throw new AccessDeniedException("Operation not authorized");
-                }
 
                 return Files.readAllBytes(getImagePath(entity, imageName));
             } else {

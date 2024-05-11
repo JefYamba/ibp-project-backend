@@ -63,6 +63,7 @@ public class SecurityConfig {
                     auth.requestMatchers(
                             "/auth/**",
                             "/ibp/v1/auth/**",
+                            "/ibp/v1/images/**",
                             "/v2/api-docs",
                             "/v3/api-docs",
                             "/v3/api-docs/**",

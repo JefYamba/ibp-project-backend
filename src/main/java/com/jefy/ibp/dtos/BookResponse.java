@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 import static com.jefy.ibp.enums.ClassEntity.APP_USER;
+import static com.jefy.ibp.enums.ClassEntity.BOOK;
 import static com.jefy.ibp.utils.ImageUtility.getUrl;
 
 /**
@@ -43,7 +44,7 @@ public class BookResponse {
                 .genre(book.getGenre())
                 .summary(book.getSummary())
                 .image(
-                        (book.getImage() == null || book.getImage().isBlank())? "" : getUrl(APP_USER,book.getImage())
+                        (book.getImage() == null || book.getImage().isBlank())? "" : getUrl(BOOK,book.getImage())
                 )
                 .build();
     }
