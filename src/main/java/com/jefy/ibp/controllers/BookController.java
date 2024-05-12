@@ -2,6 +2,7 @@ package com.jefy.ibp.controllers;
 
 import com.jefy.ibp.dtos.BookRequest;
 import com.jefy.ibp.dtos.BookResponse;
+import com.jefy.ibp.dtos.ConfirmationResponse;
 import com.jefy.ibp.services.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -117,9 +118,9 @@ public class BookController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500"),
             }
     )
-    public ResponseEntity<String> delete(@PathVariable("book_id") Long bookId) throws IOException {
+    public ResponseEntity<ConfirmationResponse> delete(@PathVariable("book_id") Long bookId) throws IOException {
         bookService.delete(bookId);
-        return ResponseEntity.status(OK).body("Book deleted successfully");
+        return ResponseEntity.status(OK).body(new ConfirmationResponse("Book deleted successfully"));
     }
 
     @PostMapping("/{book_id}")
@@ -133,8 +134,8 @@ public class BookController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500"),
             }
     )
-    public ResponseEntity<String> setImageCover(@PathVariable("book_id") Long bookId, @RequestPart MultipartFile image) throws IOException {
+    public ResponseEntity<ConfirmationResponse> setImageCover(@PathVariable("book_id") Long bookId, @RequestPart MultipartFile image) throws IOException {
         bookService.setImage(bookId, image);
-        return ResponseEntity.status(OK).body("Book deleted successfully");
+        return ResponseEntity.status(OK).body(new ConfirmationResponse("Book image profile saved successfully"));
     }
 }

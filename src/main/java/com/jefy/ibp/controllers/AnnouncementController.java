@@ -2,6 +2,7 @@ package com.jefy.ibp.controllers;
 
 import com.jefy.ibp.dtos.AnnouncementRequest;
 import com.jefy.ibp.dtos.AnnouncementResponse;
+import com.jefy.ibp.dtos.ConfirmationResponse;
 import com.jefy.ibp.services.AnnouncementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -93,8 +94,8 @@ public class AnnouncementController {
                     @ApiResponse(description = "Bad request/ Invalid parameter", responseCode = "400"),
             }
     )
-    public ResponseEntity<String> delete(@PathVariable("announcement_id") Long announcementId) {
+    public ResponseEntity<ConfirmationResponse> delete(@PathVariable("announcement_id") Long announcementId) {
         announcementService.delete(announcementId);
-        return ResponseEntity.status(OK).body("Announcement deleted successfully");
+        return ResponseEntity.status(OK).body(new ConfirmationResponse("Announcement deleted successfully"));
     }
 }

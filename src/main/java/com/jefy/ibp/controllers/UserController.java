@@ -1,5 +1,6 @@
 package com.jefy.ibp.controllers;
 
+import com.jefy.ibp.dtos.ConfirmationResponse;
 import com.jefy.ibp.dtos.UserRequest;
 import com.jefy.ibp.dtos.ChangePasswordRequest;
 import com.jefy.ibp.dtos.UserResponse;
@@ -108,9 +109,9 @@ public class UserController {
                     @ApiResponse(description = "Not acceptable/ Invalid object", responseCode = "406"),
             }
     )
-    public ResponseEntity<String> changePassword(@PathVariable("user_id") Long userId, @RequestBody @Valid ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<ConfirmationResponse> changePassword(@PathVariable("user_id") Long userId, @RequestBody @Valid ChangePasswordRequest changePasswordRequest) {
         appUserService.changePassWord(userId, changePasswordRequest);
-        return ResponseEntity.status(OK).body("user password updated successfully");
+        return ResponseEntity.status(OK).body(new ConfirmationResponse("user password updated successfully"));
 
     }
 
@@ -125,9 +126,9 @@ public class UserController {
                     @ApiResponse(description = "Bad request/ Invalid parameter", responseCode = "400"),
             }
     )
-    public ResponseEntity<String> changeRole(@PathVariable("user_id") Long userId, @RequestBody Role role) {
+    public ResponseEntity<ConfirmationResponse> changeRole(@PathVariable("user_id") Long userId, @RequestBody Role role) {
         appUserService.changeRole(userId, role);
-        return ResponseEntity.status(OK).body("user role updated successfully");
+        return ResponseEntity.status(OK).body(new ConfirmationResponse("user role updated successfully"));
     }
 
     @DeleteMapping("/{user_id}")
@@ -141,9 +142,9 @@ public class UserController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500"),
             }
     )
-    public ResponseEntity<String> delete(@PathVariable("user_id") Long userId) throws IOException {
+    public ResponseEntity<ConfirmationResponse> delete(@PathVariable("user_id") Long userId) throws IOException {
         appUserService.delete(userId);
-        return ResponseEntity.status(OK).body("user deleted successfully");
+        return ResponseEntity.status(OK).body(new ConfirmationResponse("User deleted successfully"));
     }
 
     @PostMapping("/{user_id}")
@@ -157,9 +158,9 @@ public class UserController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500"),
             }
     )
-    public ResponseEntity<String> setImageProfile(@PathVariable("user_id") Long userId, @RequestPart MultipartFile image) throws IOException {
+    public ResponseEntity<ConfirmationResponse> setImageProfile(@PathVariable("user_id") Long userId, @RequestPart MultipartFile image) throws IOException {
         appUserService.setImage(userId, image);
-        return ResponseEntity.status(OK).body("user image profile saved successfully");
+        return ResponseEntity.status(OK).body(new ConfirmationResponse("user image profile saved successfully"));
     }
 
 

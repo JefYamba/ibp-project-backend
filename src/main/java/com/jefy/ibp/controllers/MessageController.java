@@ -1,5 +1,6 @@
 package com.jefy.ibp.controllers;
 
+import com.jefy.ibp.dtos.ConfirmationResponse;
 import com.jefy.ibp.dtos.MessageRequest;
 import com.jefy.ibp.dtos.MessageResponse;
 import com.jefy.ibp.services.MessageService;
@@ -151,8 +152,8 @@ public class MessageController {
                     @ApiResponse(description = "Bad request/ Invalid parameter", responseCode = "400"),
             }
     )
-    public ResponseEntity<String> delete(@PathVariable("message_id") Long messageId) {
+    public ResponseEntity<ConfirmationResponse> delete(@PathVariable("message_id") Long messageId) {
         messageService.delete(messageId);
-        return ResponseEntity.status(OK).body("message deleted successfully");
+        return ResponseEntity.status(OK).body(new ConfirmationResponse("message deleted successfully"));
     }
 }
