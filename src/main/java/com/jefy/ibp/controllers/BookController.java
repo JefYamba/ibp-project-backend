@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -125,7 +124,7 @@ public class BookController {
         return ResponseEntity.status(OK).body(new ConfirmationResponse("Book deleted successfully"));
     }
 
-    @PostMapping(path = "/{book_id}", consumes = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE}, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{book_id}", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Register book image cover  [For admin only]",

@@ -1,10 +1,6 @@
 package com.jefy.ibp.controllers;
 
-import com.jefy.ibp.dtos.ConfirmationResponse;
-import com.jefy.ibp.dtos.UserRequest;
-import com.jefy.ibp.dtos.ChangePasswordRequest;
-import com.jefy.ibp.dtos.UserResponse;
-import com.jefy.ibp.enums.Role;
+import com.jefy.ibp.dtos.*;
 import com.jefy.ibp.services.AppUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -127,8 +123,8 @@ public class UserController {
                     @ApiResponse(description = "Bad request/ Invalid parameter", responseCode = "400"),
             }
     )
-    public ResponseEntity<ConfirmationResponse> changeRole(@PathVariable("user_id") Long userId, @RequestBody Role role) {
-        appUserService.changeRole(userId, role);
+    public ResponseEntity<ConfirmationResponse> changeRole(@PathVariable("user_id") Long userId, @RequestBody RoleRequest roleRequest) {
+        appUserService.changeRole(userId, roleRequest.getRole());
         return ResponseEntity.status(OK).body(new ConfirmationResponse("user role updated successfully"));
     }
 
@@ -148,7 +144,7 @@ public class UserController {
         return ResponseEntity.status(OK).body(new ConfirmationResponse("User deleted successfully"));
     }
 
-    @PostMapping(path = "/{user_id}", consumes = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE}, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/{user_id}", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Register user image profile [For admin or current logged user only]",
             description = "set an image profile for an existing user",
