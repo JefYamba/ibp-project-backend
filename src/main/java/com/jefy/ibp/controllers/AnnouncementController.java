@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.jefy.ibp.dtos.Constants.ANNOUNCEMENTS_URL;
 import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * @Author JefYamba
@@ -29,7 +30,7 @@ import static org.springframework.http.HttpStatus.*;
 public class AnnouncementController {
     private final AnnouncementService announcementService;
 
-    @GetMapping
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get all the announcements",
             description = "Fetch a page of announcements",
@@ -43,7 +44,7 @@ public class AnnouncementController {
         return ResponseEntity.status(OK).body(announcementService.getAll(page,size));
     }
 
-    @GetMapping("/{announcement_id}")
+    @GetMapping(path = "/{announcement_id}", produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get announcement by Id",
             description = "fetch a announcement using the id",
@@ -56,7 +57,7 @@ public class AnnouncementController {
             return ResponseEntity.status(OK).body(announcementService.getById(announcementId));
     }
 
-    @PostMapping
+    @PostMapping(produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Make an announcement  [For admin only]",
@@ -70,7 +71,7 @@ public class AnnouncementController {
         return ResponseEntity.status(OK).body(announcementService.create(announcementRequest));
     }
 
-    @PutMapping
+    @PutMapping(produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Update an announcement  [For admin only]",
@@ -84,7 +85,7 @@ public class AnnouncementController {
         return ResponseEntity.status(OK).body(announcementService.update(announcementRequest));
     }
 
-    @DeleteMapping("/{announcement_id}")
+    @DeleteMapping(path = "/{announcement_id}", produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Delete an announcement  [For admin only]",

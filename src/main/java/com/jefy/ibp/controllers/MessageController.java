@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.jefy.ibp.dtos.Constants.MESSAGES_URL;
 import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * @Author JefYamba
@@ -30,7 +32,7 @@ public class MessageController {
     private final MessageService messageService;
 
 
-    @GetMapping
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Get all the messages [For admin only]",
@@ -47,7 +49,7 @@ public class MessageController {
     }
 
 
-    @GetMapping("/admins")
+    @GetMapping(path = "/admins", produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Get all the admin messages [For admin only]",
@@ -64,7 +66,7 @@ public class MessageController {
     }
 
 
-    @GetMapping("/sender/{sender_id}")
+    @GetMapping(path = "/sender/{sender_id}", produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get messages by sender  [For admin or current logged user as sender only]",
             description = "Fetch a page of messages by sender using sender id",
@@ -81,7 +83,7 @@ public class MessageController {
         return ResponseEntity.status(OK).body(messageService.getAllBySender(senderId,page,size));
     }
 
-    @GetMapping("/receiver/{receiver_id}")
+    @GetMapping(path = "/receiver/{receiver_id}", produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get messages by receiver [For admin or current logged user as receiver only]",
             description = "Fetch a page of messages by receiver using receiver id",
@@ -100,7 +102,7 @@ public class MessageController {
 
 
 
-    @GetMapping("/{message_id}")
+    @GetMapping(path = "/{message_id}", produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get message by Id [For admin or current logged user as sender/receiver only]",
             description = "fetch a message using the id",
@@ -114,7 +116,7 @@ public class MessageController {
         return ResponseEntity.status(OK).body(messageService.getById(messageId));
     }
 
-    @PostMapping
+    @PostMapping(produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Send a message [For current logged user as sender only]",
             description = "send a new message",
@@ -128,7 +130,7 @@ public class MessageController {
         return ResponseEntity.status(OK).body(messageService.create(messageRequest));
     }
 
-    @PutMapping
+    @PutMapping(produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Update a message [For current logged user as sender only]",
             description = "modifies an existing message",
@@ -142,7 +144,7 @@ public class MessageController {
         return ResponseEntity.status(OK).body(messageService.update(messageRequest));
     }
 
-    @DeleteMapping("/{message_id}")
+    @DeleteMapping(path = "/{message_id}", produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Delete a message [For admin only]",

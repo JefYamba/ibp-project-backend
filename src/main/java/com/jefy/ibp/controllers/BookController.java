@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.io.IOException;
 
 import static com.jefy.ibp.dtos.Constants.BOOKS_URL;
 import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.MediaType.*;
 
 /**
  * @Author JefYamba
@@ -32,7 +34,7 @@ import static org.springframework.http.HttpStatus.*;
 public class BookController {
     private final BookService bookService;
 
-    @GetMapping
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get all the books",
             description = "Fetch a page of books",
@@ -48,7 +50,7 @@ public class BookController {
         return ResponseEntity.status(OK).body(bookService.getAll(page,size, searchKey));
     }
 
-    @GetMapping("/latest")
+    @GetMapping(path = "/latest", produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get all the books ordered by the latest",
             description = "Fetch a page of books ordered by the latest",
@@ -63,7 +65,7 @@ public class BookController {
         return ResponseEntity.status(OK).body(bookService.getAllLatest(page,size));
     }
 
-    @GetMapping("/{book_id}")
+    @GetMapping(path = "/{book_id}", produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get book by Id",
             description = "fetch a book using the id",
@@ -76,7 +78,7 @@ public class BookController {
         return ResponseEntity.status(OK).body(bookService.getById(bookId));
     }
 
-    @PostMapping
+    @PostMapping(produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Add a book",
@@ -92,7 +94,7 @@ public class BookController {
     }
 
 
-    @PutMapping
+    @PutMapping(produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Update a book  [For admin only]",
@@ -107,7 +109,7 @@ public class BookController {
         return ResponseEntity.status(OK).body(bookService.update(bookRequest));
     }
 
-    @DeleteMapping("/{book_id}")
+    @DeleteMapping(path = "/{book_id}", produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Delete a book [For admin only]",
@@ -123,7 +125,7 @@ public class BookController {
         return ResponseEntity.status(OK).body(new ConfirmationResponse("Book deleted successfully"));
     }
 
-    @PostMapping("/{book_id}")
+    @PostMapping(path = "/{book_id}", consumes = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE}, produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Register book image cover  [For admin only]",

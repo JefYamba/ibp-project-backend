@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import static com.jefy.ibp.dtos.Constants.USERS_URL;
 import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.MediaType.*;
 
 /**
  * @Author JefYamba
@@ -35,7 +36,7 @@ public class UserController {
     private final AppUserService appUserService;
 
 
-    @GetMapping
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Get all the users [For admin only]",
@@ -53,7 +54,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/{user_id}")
+    @GetMapping(path = "/{user_id}", produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get user by Id [For admin or current logged user only]",
             description = "fetch a user using the id",
@@ -67,7 +68,7 @@ public class UserController {
         return ResponseEntity.status(OK).body(appUserService.getById(userId));
     }
 
-    @PostMapping
+    @PostMapping(produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Add a user [For admin only]",
@@ -82,7 +83,7 @@ public class UserController {
             return ResponseEntity.status(OK).body(appUserService.create(userRequest));
     }
 
-    @PutMapping
+    @PutMapping(produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Update a user [For admin or current logged user only]",
             description = "modifies an existing user",
@@ -97,7 +98,7 @@ public class UserController {
             return ResponseEntity.status(OK).body(appUserService.update(userRequest));
     }
 
-    @PutMapping("/{user_id}/update_password")
+    @PutMapping(path = "/{user_id}/update_password", produces = APPLICATION_JSON_VALUE)
     @Operation(
 
             summary = "Change user's password [For current logged user only]",
@@ -115,7 +116,7 @@ public class UserController {
 
     }
 
-    @PutMapping("/{user_id}/update_role")
+    @PutMapping(path = "/{user_id}/update_role", produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
 
@@ -131,7 +132,7 @@ public class UserController {
         return ResponseEntity.status(OK).body(new ConfirmationResponse("user role updated successfully"));
     }
 
-    @DeleteMapping("/{user_id}")
+    @DeleteMapping(path = "/{user_id}", produces = APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Delete a user [For admin only]",
@@ -147,7 +148,7 @@ public class UserController {
         return ResponseEntity.status(OK).body(new ConfirmationResponse("User deleted successfully"));
     }
 
-    @PostMapping("/{user_id}")
+    @PostMapping(path = "/{user_id}", consumes = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE}, produces = APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Register user image profile [For admin or current logged user only]",
             description = "set an image profile for an existing user",
